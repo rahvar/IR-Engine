@@ -7,3 +7,4 @@ flask/*
 *.project
 *.pydevproject
 *.settings
+.settings/*
