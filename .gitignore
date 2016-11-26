@@ -1,3 +1,6 @@
 tmp/*
 __pycache__
 flask/*
+*.*~
+*.pyc
+*.git*
