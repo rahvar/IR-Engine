@@ -1,4 +1,13 @@
 tmp/*
 __pycache__
 flask/*
+<<<<<<< HEAD
 *.json
+=======
+*.*~
+*.pyc
+*.git*
+*.project
+*.pydevproject
+*.settings
+>>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27

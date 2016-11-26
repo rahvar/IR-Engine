@@ -2,6 +2,10 @@
 from app import app
 from flask import render_template
 from flask import request
+<<<<<<< HEAD
+=======
+from flask import jsonify
+>>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
 # from settings import APP_STATIC
 import json
 import pysolr
@@ -22,6 +26,18 @@ def query():
     
     return render_template('index.html',tweets=results)
 
+<<<<<<< HEAD
+=======
+@app.route('/tags',methods=['POST'])
+def tags():
+    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    # results = solr.search("*:*")
+    params = {'rows': '0', "facet":"on", "facet.field":"hashtags"} 
+    results = solr.search("*:*", **params)
+
+
+    return jsonify(results.facets['facet_fields']['hashtags'])
+>>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
 
 @app.route('/')
 @app.route('/index')
@@ -32,6 +48,7 @@ def index():
     # response = urlopen('https://api.twitter.com/1.1/statuses/oembed.json?id=801086836764385280')
     # data2 = json.loads(response.read().decode('utf8'))
     # print data['html']
+<<<<<<< HEAD
 
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     # results = solr.search("*:*")
@@ -44,3 +61,12 @@ def index():
 @app.route('/tags')
 def tags(data):
     return data
+=======
+
+    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    # results = solr.search("*:*")
+    params = {'rows': '100'} 
+    results = solr.search("*:*", **params)
+    
+    return render_template('index.html',tweets=results)
+>>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
