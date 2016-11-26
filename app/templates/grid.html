@@ -9,27 +9,19 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Go Search!</title>
+    <title>SB Admin 2 - Bootstrap Admin Theme</title>
 
     <!-- Bootstrap Core CSS -->
-
-    <link href="{{ url_for('.static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+    <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
-    <link href="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.css') }}" rel="stylesheet">
+    <link href="../vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-
-    <!-- Morris Charts CSS -->
-    <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
- rel="stylesheet">
-
+    <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
-    <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ url_for('.static', filename='font-awesome/css/index.css') }}">
+    <link href="../vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -53,7 +45,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Go Search!!</a>
+                <a class="navbar-brand" href="index.html">SB Admin v2.0</a>
             </div>
             <!-- /.navbar-header -->
 
@@ -270,7 +262,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-<!--                         <li class="sidebar-search">
+                        <li class="sidebar-search">
                             <div class="input-group custom-search-form">
                                 <input type="text" class="form-control" placeholder="Search...">
                                 <span class="input-group-btn">
@@ -279,8 +271,8 @@
                                 </button>
                             </span>
                             </div>
-                        
-                        </li> -->
+                            <!-- /input-group -->
+                        </li>
                         <li>
                             <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
@@ -375,135 +367,309 @@
             <!-- /.navbar-static-side -->
         </nav>
 
-                                    <!-- End of Navigation Bar -->
-
         <div id="page-wrapper">
-            <!-- /.col-lg-12 -->
             <div class="row">
                 <div class="col-lg-12">
-                <form class="form-inline" action="/query" method="get">
-                    <div class="input-group custom-search-form col-lg-12">
-                        
-                            <input type="text" class="form-control search-bar" placeholder="Search..." name="usrquery">
-                            <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                        
-                    </div>
-                    </form>
+                    <h1 class="page-header">Grid</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-<!--             <div class="row">
+            <!-- /.row -->
+            <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
-                </div> -->
-                 <!-- /.col-lg-12 -->
-           <!-- </div> -->
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3>Grid options</h3>
+                            <p>See how aspects of the Bootstrap grid system work across multiple devices with a handy table.</p>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>
+                                                Extra small devices
+                                                <small>Phones (&lt;768px)</small>
+                                            </th>
+                                            <th>
+                                                Small devices
+                                                <small>Tablets (&ge;768px)</small>
+                                            </th>
+                                            <th>
+                                                Medium devices
+                                                <small>Desktops (&ge;992px)</small>
+                                            </th>
+                                            <th>
+                                                Large devices
+                                                <small>Desktops (&ge;1200px)</small>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>Grid behavior</th>
+                                            <td>Horizontal at all times</td>
+                                            <td colspan="3">Collapsed to start, horizontal above breakpoints</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Max container width</th>
+                                            <td>None (auto)</td>
+                                            <td>750px</td>
+                                            <td>970px</td>
+                                            <td>1170px</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Class prefix</th>
+                                            <td>
+                                                <code>.col-xs-</code>
+                                            </td>
+                                            <td>
+                                                <code>.col-sm-</code>
+                                            </td>
+                                            <td>
+                                                <code>.col-md-</code>
+                                            </td>
+                                            <td>
+                                                <code>.col-lg-</code>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th># of columns</th>
+                                            <td colspan="4">12</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Max column width</th>
+                                            <td class="text-muted">Auto</td>
+                                            <td>60px</td>
+                                            <td>78px</td>
+                                            <td>95px</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Gutter width</th>
+                                            <td colspan="4">30px (15px on each side of a column)</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Nestable</th>
+                                            <td colspan="4">Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Offsets</th>
+                                            <td colspan="4">Yes</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Column ordering</th>
+                                            <td colspan="4">Yes</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p>Grid classes apply to devices with screen widths greater than or equal to the breakpoint sizes, and override grid classes targeted at smaller devices. Therefore, applying any
+                                <code>.col-md-</code> class to an element will not only affect its styling on medium devices but also on large devices if a
+                                <code>.col-lg-</code> class is not present.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
             <!-- /.row -->
 
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <i class="fa fa-twitter"></i>  Tweets for the query
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            {% for tweet in tweets %}
-                                <div class="qa-message-list">
-                                    <div class="message-item">
-                                        <div class="qa-message-content">
-                                            {{tweet.html[0]|safe}}
-                                        </div>
-                                    </div>
-                                </div>    
-                            {% endfor %}
-<!--                             <div class="qa-message-list" id="wallmessages">
-                                <div class="message-item" id="m16">
-                                    <div class="qa-message-content">
-                                        {{tweets}}
-                                    </div>
-                                </div>
-                            </div>  
-                            <div class="qa-message-list" id="wallmessages">
-                                <div class="message-item" id="m16">
-                                    <div class="qa-message-content">
-                                        {{tweets}}
-                                    </div>
-                                </div>
-                            </div> -->                           
-                        </div>
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-8 -->
-                <div class="col-lg-4">
+                <div class="col-lg-12">
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Trending <i class="fa fa-hashtag fa-fw"></i> Tags
-                        </div>
-                        <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div class="list-group">
-
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> New Comment
-                                    <span class="pull-right text-muted small"><em>4 minutes ago</em>
-                                    </span>
-                                </a>
-<!--                                 <a href="#" class="list-group-item">
-                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                                    <span class="pull-right text-muted small"><em>12 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
-                                    <span class="pull-right text-muted small"><em>27 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-tasks fa-fw"></i> New Task
-                                    <span class="pull-right text-muted small"><em>43 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
-                                    <span class="pull-right text-muted small"><em>11:32 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-bolt fa-fw"></i> Server Crashed!
-                                    <span class="pull-right text-muted small"><em>11:13 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-warning fa-fw"></i> Server Not Responding
-                                    <span class="pull-right text-muted small"><em>10:57 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-shopping-cart fa-fw"></i> New Order Placed
-                                    <span class="pull-right text-muted small"><em>9:49 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-money fa-fw"></i> Payment Received
-                                    <span class="pull-right text-muted small"><em>Yesterday</em>
-                                    </span>
-                                </a> -->
+                            <h3>Example: Stacked-to-horizontal</h3>
+                            <p>Using a single set of
+                                <code>.col-md-*</code> grid classes, you can create a default grid system that starts out stacked on mobile devices and tablet devices (the extra small to small range) before becoming horizontal on desktop (medium) devices. Place grid columns in any
+                                <code>.row</code>.</p>
+                            <div class="row show-grid">
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
+                                <div class="col-md-1">.col-md-1</div>
                             </div>
-                            <!-- /.list-group -->
-                            <a href="#" class="btn btn-default btn-block">View All Alerts</a>
+                            <div class="row show-grid">
+                                <div class="col-md-8">.col-md-8</div>
+                                <div class="col-md-4">.col-md-4</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-md-4">.col-md-4</div>
+                                <div class="col-md-4">.col-md-4</div>
+                                <div class="col-md-4">.col-md-4</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-md-6">.col-md-6</div>
+                                <div class="col-md-6">.col-md-6</div>
+                            </div>
                         </div>
-                        <!-- /.panel-body -->
                     </div>
                 </div>
-                <!-- /.col-lg-4 -->
+                <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3>Example: Mobile and desktop</h3>
+                            <p>Don't want your columns to simply stack in smaller devices? Use the extra small and medium device grid classes by adding
+                                <code>.col-xs-*</code>
+                                <code>.col-md-*</code> to your columns. See the example below for a better idea of how it all works.</p>
+                            <div class="row show-grid">
+                                <div class="col-xs-12 col-md-8">.col-xs-12 .col-md-8</div>
+                                <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+                                <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+                                <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-xs-6">.col-xs-6</div>
+                                <div class="col-xs-6">.col-xs-6</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3>Example: Mobile, tablet, desktops</h3>
+                            <p>Build on the previous example by creating even more dynamic and powerful layouts with tablet
+                                <code>.col-sm-*</code> classes.</p>
+                            <div class="row show-grid">
+                                <div class="col-xs-12 col-sm-6 col-md-8">.col-xs-12 .col-sm-6 .col-md-8</div>
+                                <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-xs-6 col-sm-4">.col-xs-6 .col-sm-4</div>
+                                <div class="col-xs-6 col-sm-4">.col-xs-6 .col-sm-4</div>
+                                <!-- Optional: clear the XS cols if their content doesn't match in height -->
+                                <div class="clearfix visible-xs"></div>
+                                <div class="col-xs-6 col-sm-4">.col-xs-6 .col-sm-4</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3 id="grid-responsive-resets">Responsive column resets</h3>
+                            <p>With the four tiers of grids available you're bound to run into issues where, at certain breakpoints, your columns don't clear quite right as one is taller than the other. To fix that, use a combination of a
+                                <code>.clearfix</code> and our <a href="#responsive-utilities">responsive utility classes</a>.</p>
+                            <div class="row show-grid">
+                                <div class="col-xs-6 col-sm-3">
+                                    .col-xs-6 .col-sm-3
+                                    <br>Resize your viewport or check it out on your phone for an example.
+                                </div>
+                                <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+
+                                <!-- Add the extra clearfix for only the required viewport -->
+                                <div class="clearfix visible-xs"></div>
+
+                                <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+                                <div class="col-xs-6 col-sm-3">.col-xs-6 .col-sm-3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3 id="grid-offsetting">Offsetting columns</h3>
+                            <p>Move columns to the right using
+                                <code>.col-md-offset-*</code> classes. These classes increase the left margin of a column by
+                                <code>*</code> columns. For example,
+                                <code>.col-md-offset-4</code> moves
+                                <code>.col-md-4</code> over four columns.</p>
+                            <div class="row show-grid">
+                                <div class="col-md-4">.col-md-4</div>
+                                <div class="col-md-4 col-md-offset-4">.col-md-4 .col-md-offset-4</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-md-3 col-md-offset-3">.col-md-3 .col-md-offset-3</div>
+                                <div class="col-md-3 col-md-offset-3">.col-md-3 .col-md-offset-3</div>
+                            </div>
+                            <div class="row show-grid">
+                                <div class="col-md-6 col-md-offset-3">.col-md-6 .col-md-offset-3</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3 id="grid-nesting">Nesting columns</h3>
+                            <p>To nest your content with the default grid, add a new
+                                <code>.row</code> and set of
+                                <code>.col-md-*</code> columns within an existing
+                                <code>.col-md-*</code> column. Nested rows should include a set of columns that add up to 12.</p>
+                            <div class="row show-grid">
+                                <div class="col-md-9">
+                                    Level 1: .col-md-9
+                                    <div class="row show-grid">
+                                        <div class="col-md-6">
+                                            Level 2: .col-md-6
+                                        </div>
+                                        <div class="col-md-6">
+                                            Level 2: .col-md-6
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h3 id="grid-column-ordering">Column ordering</h3>
+                            <p>Easily change the order of our built-in grid columns with
+                                <code>.col-md-push-*</code> and
+                                <code>.col-md-pull-*</code> modifier classes.</p>
+                            <div class="row show-grid">
+                                <div class="col-md-9 col-md-push-3">.col-md-9 .col-md-push-3</div>
+                                <div class="col-md-3 col-md-pull-9">.col-md-3 .col-md-pull-9</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
         </div>
         <!-- /#page-wrapper -->
 
@@ -511,63 +677,16 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="../vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="{{ url_for('.static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.js') }}"></script> 
-
-    <!-- Morris Charts JavaScript -->
-    <script src="{{ url_for('.static', filename='vendor/raphael/raphael.min.js') }}"></script>
-    <script src="{{ url_for('.static', filename='vendor/morrisjs/morris.min.js') }}"></script>
-    <script src="{{ url_for('.static', filename='data/morris-data') }}"></script>
+    <script src="../vendor/metisMenu/metisMenu.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
-
-    <script type="text/javascript">
-        $(function(){
-            
-            var data = $.ajax({
-                url: "/tags",
-                method: "POST",
-                dataType: "json"
-            })
-            .done(function(data) {
-                console.log("success");
-            })
-            .fail(function() {
-                console.log("error");
-            })
-            .always(function() {
-                console.log("complete");
-            });
-            
-
-        });
-
-
-    $(function() {
-      $('button').click(function() {
-        //var user = $('#txtUsername').val();
-        var pass = $('#txtPassword').val();
-        $.ajax({
-            url: '/signUpUser',
-            data: $('form').serialize(),
-            type: 'POST',
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(error) {
-                console.log(error);
-              }
-            });
-        });
-    });
-
-    </script>
+    <script src="../dist/js/sb-admin-2.js"></script>
 
 </body>
 
