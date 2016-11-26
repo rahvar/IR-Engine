@@ -2,6 +2,7 @@
 from app import app
 from flask import render_template
 from flask import request
+from flask import jsonify
 # from settings import APP_STATIC
 import json
 import pysolr
@@ -22,6 +23,15 @@ def query():
     
     return render_template('index.html',tweets=results)
 
+@app.route('/tags',methods=['POST'])
+def tags():
+    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    # results = solr.search("*:*")
+    params = {'rows': '0', "facet":"on", "facet.field":"hashtags"} 
+    results = solr.search("*:*", **params)
+
+
+    return jsonify(results.facets['facet_fields']['hashtags'])
 
 @app.route('/')
 @app.route('/index')
