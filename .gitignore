@@ -4,3 +4,6 @@ flask/*
 *.*~
 *.pyc
 *.git*
+*.project
+*.pydevproject
+*.settings
