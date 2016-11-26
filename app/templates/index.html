@@ -7,6 +7,9 @@
 
 
 <body>
-    {{info.html|safe}}
-    {{info2.html|safe}}
+   <table>
+    {% for tweet in info %}
+      <tr><td>{{ tweet.html[0]|safe}}</td></tr>
+    {% endfor %}
+   </table>
 </body>
