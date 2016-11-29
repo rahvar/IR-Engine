@@ -20,6 +20,8 @@
 
     <!-- Custom CSS -->
     <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='css/simplePagination.css') }}" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
@@ -28,7 +30,6 @@
 
     <!-- Custom Fonts -->
     <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -385,7 +386,7 @@
                         
                             <input type="text" class="form-control search-bar" placeholder="Search..." name="usrquery">
                             <span class="input-group-btn" style="vertical-align:top;">
-                                <button class="btn btn-default" type="submit">
+                                <button id="main-search-btn" class="btn btn-default" type="submit">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </span>
@@ -409,31 +410,43 @@
                         <div class="panel-heading">
                             <i class="fa fa-twitter"></i>  Tweets for the query
                         </div>
+
+<!--                         <nav aria-label="Page navigation">
+                          <ul class="pagination pg-blue">
+                            <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#">4</a></li>
+                            <li class="page-item"><a class="page-link" href="#">5</a></li>
+                            <li class="page-item">
+                              <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav> -->
+
                         <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            {% for tweet in tweets %}
-                                <div class="qa-message-list">
-                                    <div class="message-item">
-                                        <div class="qa-message-content">
-                                            {{tweet.html[0]|safe}}
-                                        </div>
-                                    </div>
-                                </div>    
-                            {% endfor %}
-<!--                             <div class="qa-message-list" id="wallmessages">
-                                <div class="message-item" id="m16">
+                        <div class="panel-body tweet-list">
+                        <div id="page-nav">
+                        
+                            <div class="qa-message-list">    
+                            {% for tweet in tweets %}                            
+                                <div class="message-item paginate">
                                     <div class="qa-message-content">
-                                        {{tweets}}
                                     </div>
                                 </div>
-                            </div>  
-                            <div class="qa-message-list" id="wallmessages">
-                                <div class="message-item" id="m16">
-                                    <div class="qa-message-content">
-                                        {{tweets}}
-                                    </div>
-                                </div>
-                            </div> -->                           
+                            {% endfor %} 
+                            </div>   
+                                            
+                        </div>
                         </div>
                     </div>
                     <!-- /.panel -->
@@ -446,54 +459,7 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div class="list-group trending-tags">
-
-<!--                                 <a href="#" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> New Comment
-                                    <span class="pull-right text-muted small"><em>4 minutes ago</em>
-                                    </span>
-                                </a> -->
-<!--                                 <a href="#" class="list-group-item">
-                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                                    <span class="pull-right text-muted small"><em>12 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
-                                    <span class="pull-right text-muted small"><em>27 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-tasks fa-fw"></i> New Task
-                                    <span class="pull-right text-muted small"><em>43 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
-                                    <span class="pull-right text-muted small"><em>11:32 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-bolt fa-fw"></i> Server Crashed!
-                                    <span class="pull-right text-muted small"><em>11:13 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-warning fa-fw"></i> Server Not Responding
-                                    <span class="pull-right text-muted small"><em>10:57 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-shopping-cart fa-fw"></i> New Order Placed
-                                    <span class="pull-right text-muted small"><em>9:49 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-money fa-fw"></i> Payment Received
-                                    <span class="pull-right text-muted small"><em>Yesterday</em>
-                                    </span>
-                                </a> -->
-                            </div>
+                            <div class="list-group trending-tags"><!-- Filled dynamically --></div>
                             <!-- /.list-group -->
                             <a href="#" class="btn btn-default btn-block">View All Alerts</a>
                         </div>
@@ -511,6 +477,10 @@
 
     <!-- jQuery -->
     <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='js/jquery.simplePagination.js') }}"></script>
+    <!-- Pagination
+    <script src="{{ url_for('.static', filename='js/jquery.twbsPagination.min.js') }}" ></script>-->
+    
 
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ url_for('.static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
@@ -525,6 +495,7 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
+    
 
     <script type="text/javascript">
 
@@ -559,9 +530,37 @@
             })
             .always(function() {
                 console.log("complete");
-            });            
+            });      
 
+            // $('#main-search-btn').on('click', function(event) {
+            //     alert("Hi");
+            // }); 
+
+            // Pagination
+            var perPage = $('.paginate');
+            // total num of tweets 
+            var totNumTweets = perPage.length;
+            console.log("Total num tweets: "+totNumTweets);
+            // num of tweets at a time 
+            var perPageTweets = 5;
+            // When the document loads hide everything else besides the first 10
+            perPage.slice(perPageTweets).hide();
+            // Applying pagination
+            $('#page-nav').pagination({
+                items: totNumTweets,
+                itemsOnPage: perPageTweets,
+                //cssStyle: 'light-theme',
+                onPageClick: function(pageNum) {
+                    var start = perPageTweets * (pageNum - 1);
+                    var end = start + perPageTweets;
+
+                    // First hide all page parts
+                    // Then show those just for our page
+                    perPage.hide().slice(start, end).show();
+                }
+            });
         });
+
     </script>
 
 </body>
