@@ -25,7 +25,8 @@ import time
 
 LANGUAGES = ['en','es','pt','fr']
 
-def ConvertTextToLanguages(json_obj,finalToken):
+def ConvertTextToLanguages(json_obj):
+    finalToken = GetToken()
     json_obj = [{'tweet_text':'All the APIs will have a free trial plan','lang':'en'},
                 {'tweet_text':'Nouveautés sur les progrès en matière de lutte contre les abus en ligne','lang':'fr'},
                 {'tweet_text':'If you have a special requirement','lang':'en'},
@@ -86,5 +87,5 @@ def GetToken(): #Get the access token from ADM, token is good for 10 minutes
 if __name__ == "__main__":
     finalToken = GetToken()
     json_obj = {}
-    ConvertTextToLanguages(json_obj,finalToken)
+    ConvertTextToLanguages(json_obj)
 #end main

@@ -20,6 +20,7 @@
 
     <!-- Custom CSS -->
     <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='dist/css/map.css') }}" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
@@ -501,6 +502,9 @@
                     </div>
                 </div>
                 <!-- /.col-lg-4 -->
+                <div class="col-lg-4">
+                	<!-- <div id="regions_div" style="width: 900px; height: 500px;"></div> -->
+               	</div>
             </div>
             <!-- /.row -->
         </div>
@@ -508,6 +512,32 @@
 
     </div>
     <!-- /#wrapper -->
+	
+ 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+      google.charts.load('upcoming', {'packages':['geochart']});
+      google.charts.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+
+        var data = google.visualization.arrayToDataTable([
+          ['Country', 'Popularity'],
+          ['Germany', 200],
+          ['United States', 300],
+          ['Brazil', 400],
+          ['Canada', 500],
+          ['France', 600],
+          ['RU', 700]
+        ]);
+
+        var options = {};
+
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+        chart.draw(data, options);
+      }
+    </script>
+	
 
     <!-- jQuery -->
     <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
