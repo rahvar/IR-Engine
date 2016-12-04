@@ -63,7 +63,7 @@ $(function(){
         console.log("success");
         //console.log(data)
         for(var i = 0; i < data.length; i+=2) {
-            if(data[i+1] < 3)
+            if(data[i+1] < 70)
                 break
             $('.trending-tags').append(
                             "<a href=\""

@@ -6,11 +6,11 @@ from flask import jsonify
 # from settings import APP_STATIC
 import json
 import pysolr
-#import pysolr
-#import urllib2
 from urllib.request import urlopen
 
-#solr = pysolr.Solr('http://localhost:8983/solr/VSM', timeout=10)
+def lang_map(language):
+    language_map = {'en':'English','fr':'French','ru':'Russian','es':'Spanish','pt':'Portuguese'}
+    return language_map[language]
 
 @app.route('/')
 @app.route('/query',methods=['GET'])
@@ -50,6 +50,7 @@ def query():
             item.append("all")
         else:
             item.append(search_string)
+        item.append(lang_map(lang_info[i]))
         filtered_lang_info[lang_info[i]] = item
     
     return render_template('index.html',tweets=results, lang_info=filtered_lang_info)

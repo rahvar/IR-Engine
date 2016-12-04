@@ -20,13 +20,12 @@
 
     <!-- Custom CSS -->
     <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-    <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet">
-    <link href="{{ url_for('.static', filename='css/simplePagination.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='dist/css/tweet_list.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='dist/css/simplePagination.css') }}" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
  rel="stylesheet">
-
 
     <!-- Custom Fonts -->
     <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
@@ -271,7 +270,7 @@
                                         {% for lang, value in lang_info.items()|sort %}
                                     
                                         <li>
-                                            <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{lang|e}}    {{value[0]|e}}
+                                            <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{value[2]|e}}    {{value[0]|e}}
                                             <br/>
                                         </li>
 
@@ -360,11 +359,9 @@
 
     <!-- jQuery -->
     <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ url_for('.static', filename='js/main.js') }}"></script>
+      
+    <script src="{{ url_for('.static', filename='dist/js/jquery.simplePagination.js') }}"></script>
     
-    <script src="{{ url_for('.static', filename='js/jquery.simplePagination.js') }}"></script>
-    
-
     <!-- Bootstrap Core JavaScript -->
     <script src="{{ url_for('.static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
 
@@ -373,6 +370,7 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
+    <script src="{{ url_for('.static', filename='dist/js/main.js') }}"></script>
 
 </body>
 
