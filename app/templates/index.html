@@ -411,42 +411,21 @@
                             <i class="fa fa-twitter"></i>  Tweets for the query
                         </div>
 
-<!--                         <nav aria-label="Page navigation">
-                          <ul class="pagination pg-blue">
-                            <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                              </a>
-                            </li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#">4</a></li>
-                            <li class="page-item"><a class="page-link" href="#">5</a></li>
-                            <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
-                              </a>
-                            </li>
-                          </ul>
-                        </nav> -->
-
                         <!-- /.panel-heading -->
-                        <div class="panel-body tweet-list">
-                        <div id="page-nav">
-                        
-                            <div class="qa-message-list">    
-                            {% for tweet in tweets %}                            
-                                <div class="message-item paginate">
-                                    <div class="qa-message-content">
+                        <div class="panel-body tweet-list" >
+                        <div id="page-nav"></div>
+                           <div class="qa-message-list" >    
+                                
+                                {% for tweet in tweets %}       
+                                <div class="message-item ">
+                                    <div class="qa-message-content paginate">
+                                        {{tweet.html[0]|safe}}
                                     </div>
                                 </div>
-                            {% endfor %} 
-                            </div>   
-                                            
-                        </div>
+                                {% endfor %} 
+
+                            </div> 
+                                    
                         </div>
                     </div>
                     <!-- /.panel -->
@@ -532,10 +511,6 @@
                 console.log("complete");
             });      
 
-            // $('#main-search-btn').on('click', function(event) {
-            //     alert("Hi");
-            // }); 
-
             // Pagination
             var perPage = $('.paginate');
             // total num of tweets 
@@ -543,7 +518,7 @@
             console.log("Total num tweets: "+totNumTweets);
             // num of tweets at a time 
             var perPageTweets = 5;
-            // When the document loads hide everything else besides the first 10
+            // When the document loads hide everything else besides the first 5
             perPage.slice(perPageTweets).hide();
             // Applying pagination
             $('#page-nav').pagination({

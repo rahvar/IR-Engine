@@ -129,7 +129,7 @@ span.ellipse.clickable {
 }
 
 .light-theme .current {
-	background: #666;
+	background: #337ab7;
 	color: #FFF;
 	border-color: #444;
 	box-shadow: 0 1px 0 rgba(255,255,255,1), 0 0 2px rgba(0, 0, 0, 0.3) inset;
