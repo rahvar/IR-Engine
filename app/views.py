@@ -2,10 +2,8 @@
 from app import app
 from flask import render_template
 from flask import request
-<<<<<<< HEAD
-=======
+
 from flask import jsonify
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
 # from settings import APP_STATIC
 import json
 import pysolr
@@ -23,21 +21,19 @@ def query():
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     # params = {'rows': '100'} 
     results = solr.search(search_string)
-    
+    print(len(results))
     return render_template('index.html',tweets=results)
 
-<<<<<<< HEAD
-=======
+
 @app.route('/tags',methods=['POST'])
 def tags():
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     # results = solr.search("*:*")
     params = {'rows': '0', "facet":"on", "facet.field":"hashtags"} 
     results = solr.search("*:*", **params)
-
+    print(len(results))
 
     return jsonify(results.facets['facet_fields']['hashtags'])
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
 
 @app.route('/')
 @app.route('/index')
@@ -48,20 +44,47 @@ def index():
     # response = urlopen('https://api.twitter.com/1.1/statuses/oembed.json?id=801086836764385280')
     # data2 = json.loads(response.read().decode('utf8'))
     # print data['html']
-<<<<<<< HEAD
+
 
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     # results = solr.search("*:*")
-    params = {'rows': '100'} 
-    results = solr.search("*:*", **params)
-    
+    params = {'rows': '1000000'} 
+    results = solr.search("*:*",**params)
+    #print(str(len(results))+'why')
+    for r in results:
+        print(r)
+        break
     return render_template('index.html',tweets=results)
 
 
+
+@app.route('/morelikethis')
+def morelikethis():
+    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    tweet_id = request.args.get('similar')
+    print('id:'+tweet_id)
+    
+    params = {'mlt':'true','mlt.mintf':'5','mlt.fl':'_text_','mlt.mindf':'1'}
+    similar = solr.more_like_this('id:'+str(tweet_id), mltfl='_text_',**params)
+    
+    
+    #similar = solr.search("id:"+tweet_id,**params)
+    #print(similar)
+    return render_template('index.html',tweets=similar)
+
+
+
+
+#@app.route('/similar')
+#def similar():
+
+
+
+"""
 @app.route('/tags')
 def tags(data):
-    return data
-=======
+    
+
 
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     # results = solr.search("*:*")
@@ -69,4 +92,5 @@ def tags(data):
     results = solr.search("*:*", **params)
     
     return render_template('index.html',tweets=results)
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
+
+"""

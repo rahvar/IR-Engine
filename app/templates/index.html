@@ -20,19 +20,6 @@
 
     <!-- Custom CSS -->
     <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-<<<<<<< HEAD
-
-    <!-- Morris Charts CSS -->
-    <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
- rel="stylesheet">
-
-
-    <!-- Custom Fonts -->
-    <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ url_for('.static', filename='font-awesome/css/index.css') }}">
-
-=======
 
     <!-- Morris Charts CSS -->
     <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
@@ -43,7 +30,6 @@
     <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet" type="text/css">
 
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -425,15 +411,27 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
+                            {% set count =0 %}
                             {% for tweet in tweets %}
+                                {% set count = count + 1 %}
                                 <div class="qa-message-list">
                                     <div class="message-item">
                                         <div class="qa-message-content">
                                             {{tweet.html[0]|safe}}
+
+
+
+                                <form action = "/morelikethis" method = "get">
+                                    <button type="submit" name="similar" value="{{tweet.id}}" > More Like This </button>
+                                </form>
+
+
+                                            <span> </span>
                                         </div>
                                     </div>
                                 </div>    
                             {% endfor %}
+                            <p> <strong> {{count}}</strong> </p>
 <!--                             <div class="qa-message-list" id="wallmessages">
                                 <div class="message-item" id="m16">
                                     <div class="qa-message-content">
@@ -456,19 +454,6 @@
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-<<<<<<< HEAD
-                            Trending <i class="fa fa-hashtag fa-fw"></i> Tags
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="list-group">
-
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> New Comment
-                                    <span class="pull-right text-muted small"><em>4 minutes ago</em>
-                                    </span>
-                                </a>
-=======
                             Trending Tags
                         </div>
                         <!-- /.panel-heading -->
@@ -480,7 +465,6 @@
                                     <span class="pull-right text-muted small"><em>4 minutes ago</em>
                                     </span>
                                 </a> -->
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
 <!--                                 <a href="#" class="list-group-item">
                                     <i class="fa fa-twitter fa-fw"></i> 3 New Followers
                                     <span class="pull-right text-muted small"><em>12 minutes ago</em>
@@ -547,39 +531,25 @@
     <script src="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.js') }}"></script> 
 
     <!-- Morris Charts JavaScript -->
-<<<<<<< HEAD
-    <script src="{{ url_for('.static', filename='vendor/raphael/raphael.min.js') }}"></script>
-    <script src="{{ url_for('.static', filename='vendor/morrisjs/morris.min.js') }}"></script>
-    <script src="{{ url_for('.static', filename='data/morris-data') }}"></script>
-=======
 <!--     <script src="{{ url_for('.static', filename='vendor/raphael/raphael.min.js') }}"></script>
     <script src="{{ url_for('.static', filename='vendor/morrisjs/morris.min.js') }}"></script>
     <script src="{{ url_for('.static', filename='data/morris-data') }}"></script> -->
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
 
     <!-- Custom Theme JavaScript -->
     <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
 
     <script type="text/javascript">
-<<<<<<< HEAD
-        $(function(){
-            
-            var data = $.ajax({
-=======
 
         $(function(){
             
             // To populate tags
             $.ajax({
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
                 url: "/tags",
                 method: "POST",
                 dataType: "json"
             })
             .done(function(data) {
                 console.log("success");
-<<<<<<< HEAD
-=======
                 //console.log(data)
                 for(var i = 0; i < data.length; i+=2) {
                     if(data[i+1] < 3)
@@ -595,45 +565,41 @@
                                     + "</em> </span> </a>")
                 }
                
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
             })
             .fail(function() {
                 console.log("error");
             })
             .always(function() {
                 console.log("complete");
-<<<<<<< HEAD
-            });
-            
-
-        });
-
-
-    $(function() {
-      $('button').click(function() {
-        //var user = $('#txtUsername').val();
-        var pass = $('#txtPassword').val();
-        $.ajax({
-            url: '/signUpUser',
-            data: $('form').serialize(),
-            type: 'POST',
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(error) {
-                console.log(error);
-              }
-            });
-        });
-    });
-
-=======
             });            
 
         });
->>>>>>> be55b087cbdf7a6825df30cf62086d259bf81a27
     </script>
 
+
+    <script type="text/javascript">
+
+        function test_func(tweets){
+            
+  
+                console.log("success");
+                console.log(tweets)
+
+                   // $('.Tweet-actions').append(
+                    //                "<li class=\"Tweet-action\">"
+                     //               +"Testing"
+                      //              +"</li>")
+
+ 
+
+        }
+        test_func({{tweets|safe}})
+    </script>
+
+
+    <script>
+
+    </script>
 </body>
 
 </html>

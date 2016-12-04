@@ -61,7 +61,7 @@ def ConvertTextToLanguages(json_obj,finalToken):
             tweet[key] = translation.text
             if counter % 50 == 0:
                 time.sleep(60)
-    print json_obj
+    return json_obj
             
 def GetToken(): #Get the access token from ADM, token is good for 10 minutes
     urlArgs = {
@@ -82,9 +82,9 @@ def GetToken(): #Get the access token from ADM, token is good for 10 minutes
     return finalToken
  
 #End GetTextAndTranslate()
-
+outfile = open()
 if __name__ == "__main__":
     finalToken = GetToken()
     json_obj = {}
-    ConvertTextToLanguages(json_obj,finalToken)
+    out_json = ConvertTextToLanguages(json_obj,finalToken)
 #end main
