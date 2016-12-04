@@ -6,6 +6,13 @@ $(function(){
         $('.lang-select').each(function(index, val) {
             $(this).prop('checked',false);
         });
+
+        var checkboxvalues = JSON.parse(sessionStorage.getItem('checkboxvalues')) || {};
+        for(var prop in checkboxvalues) {
+            checkboxvalues[prop] = false;
+        }
+        console.log(checkboxvalues);
+        sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
     }
 
     // All page resets
@@ -18,6 +25,7 @@ $(function(){
         var user_query = $("input[name='usrquery']").val();
         sessionStorage.setItem('usrquery',user_query);
         //alert("Setting to storage: " + sessionStorage.getItem('usrquery'))
+        alert("Resetting")
         pageResets();
     });
 
@@ -28,7 +36,7 @@ $(function(){
         pageResets();
     });
     
-    // Setting query into sessio when home button is pressed
+    // Setting query into session when home button is pressed
     $('.home-btn').click(function(event) {
         sessionStorage.setItem('usrquery','');
         pageResets();
@@ -81,7 +89,7 @@ $(function(){
     var perPage = $('.paginate');
     // total num of tweets 
     var totNumTweets = perPage.length;
-    console.log("Total num tweets: "+totNumTweets);
+    //console.log("Total num tweets: "+totNumTweets);
     // num of tweets at a time 
     var perPageTweets = 5;
     // When the document loads hide everything else besides the first 5
