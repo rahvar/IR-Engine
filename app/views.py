@@ -12,16 +12,47 @@ from urllib.request import urlopen
 
 #solr = pysolr.Solr('http://localhost:8983/solr/VSM', timeout=10)
 
+@app.route('/')
 @app.route('/query',methods=['GET'])
 def query():
-    search_string = request.args.get('usrquery', '*:*')
-    if search_string == '':
+    search_string = request.args.get('usrquery', '')
+    tweet_language = request.args.get('lang','')
+    print("Tweet language: ",tweet_language)
+
+    # base case params
+    params = {'facet':'on', 'facet.field':'tweet_lang', 'rows':100}
+
+    # if not query, display everything
+    if search_string == '' or search_string == 'undefined':
         search_string = '*:*'
+
+    if tweet_language != '':
+        languages = tweet_language.split(' ')
+        # tweet_lang:en tweet_lang:es
+        fq_content = ''
+        for lang in languages:
+            fq_content += "tweet_lang:"+lang+' '
+        params['fq'] = fq_content
+
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
-    # params = {'rows': '100'} 
-    results = solr.search(search_string)
     
-    return render_template('index.html',tweets=results)
+    print(params)
+    results = solr.search(search_string, **params)
+
+    # extracting the tweet language
+    lang_info = results.facets['facet_fields']['tweet_lang']
+    filtered_lang_info = dict()
+
+    for i in range(0,len(lang_info),2):
+        item = []
+        item.append(lang_info[i+1])
+        if search_string is None:
+            item.append("all")
+        else:
+            item.append(search_string)
+        filtered_lang_info[lang_info[i]] = item
+    
+    return render_template('index.html',tweets=results, lang_info=filtered_lang_info)
 
 @app.route('/tags',methods=['POST'])
 def tags():
@@ -30,22 +61,24 @@ def tags():
     params = {'rows': '0', "facet":"on", "facet.field":"hashtags"} 
     results = solr.search("*:*", **params)
 
-
     return jsonify(results.facets['facet_fields']['hashtags'])
 
-@app.route('/')
-@app.route('/index')
-def index():
-    # response = urlopen('https://api.twitter.com/1.1/statuses/oembed.json?id=801219908910469120')
-    # #data = json.loads('https://publish.twitter.com/oembed.json?url=https%3A%2F%2Ftwitter.com%2Fi%2Fmoments%2F650667182356082688')
-    # data = json.loads(response.read().decode('utf8'))
-    # response = urlopen('https://api.twitter.com/1.1/statuses/oembed.json?id=801086836764385280')
-    # data2 = json.loads(response.read().decode('utf8'))
-    # print data['html']
+# @app.route('/')
+# @app.route('/index')
+# def index():
 
-    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
-    # results = solr.search("*:*")
-    params = {'rows': '100'} 
-    results = solr.search("*:*", **params)
+#     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+#     # results = solr.search("*:*")
+#     params = {'rows': '100','facet':'on', 'facet.field':'tweet_lang'} 
+#     results = solr.search("*:*", **params)
+
+#     lang_info = results.facets['facet_fields']['tweet_lang']
+#     filtered_lang_info = dict()
+
+
+#     for i in range(0,len(lang_info),2):
+#         filtered_lang_info[lang_info[i]] = lang_info[i+1]
+
+#     print(filtered_lang_info)
     
-    return render_template('index.html',tweets=results)
+#     return render_template('index.html',tweets=results, lang_info=filtered_lang_info)
