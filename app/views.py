@@ -48,13 +48,14 @@ def index():
 
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     # results = solr.search("*:*")
-    params = {'rows': '1000000'} 
+    params = {'rows': '100'} 
     results = solr.search("*:*",**params)
-    #print(str(len(results))+'why')
+  
     for r in results:
         print(r)
         break
     return render_template('index.html',tweets=results)
+
 
 
 
@@ -64,33 +65,26 @@ def morelikethis():
     tweet_id = request.args.get('similar')
     print('id:'+tweet_id)
     
-    params = {'mlt':'true','mlt.mintf':'5','mlt.fl':'_text_','mlt.mindf':'1'}
+    params = {'mlt':'true','mlt.mintf':'10','mlt.fl':'_text_','mlt.mindf':'1'}
     similar = solr.more_like_this('id:'+str(tweet_id), mltfl='_text_',**params)
     
+    if len(similar)==0:
+          similar = solr.search('id:'+tweet_id)
+
     
-    #similar = solr.search("id:"+tweet_id,**params)
-    #print(similar)
     return render_template('index.html',tweets=similar)
 
-
-
-
-#@app.route('/similar')
-#def similar():
-
-
-
-"""
-@app.route('/tags')
-def tags(data):
-    
-
-
+@app.route('/maps')
+def maps():
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
-    # results = solr.search("*:*")
-    params = {'rows': '100'} 
-    results = solr.search("*:*", **params)
+    params = {'rows': '1000000'} 
+    results = solr.search("tweet_lat:*",**params)
+    locations = list()
+    #info = dict()
+    for r in results:
+        info = dict()
+        info['lat'] = r['tweet_lat'][0]
+        info['lng'] = r['tweet_long'][0]
+        locations.append(info)
     
-    return render_template('index.html',tweets=results)
-
-"""
+    return render_template('maps.html',results=json.dumps(locations))
