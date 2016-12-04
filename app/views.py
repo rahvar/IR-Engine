@@ -20,7 +20,7 @@ def query():
     print("Tweet language: ",tweet_language)
 
     # base case params
-    params = {'facet':'on', 'facet.field':'tweet_lang', 'rows':100}
+    params = {'facet':'on', 'facet.field':'{!ex=dt}tweet_lang', 'rows':100}
 
     # if not query, display everything
     if search_string == '' or search_string == 'undefined':
@@ -32,7 +32,7 @@ def query():
         fq_content = ''
         for lang in languages:
             fq_content += "tweet_lang:"+lang+' '
-        params['fq'] = fq_content
+        params['fq'] = '{!tag=dt}'+fq_content
 
     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
     
@@ -62,23 +62,3 @@ def tags():
     results = solr.search("*:*", **params)
 
     return jsonify(results.facets['facet_fields']['hashtags'])
-
-# @app.route('/')
-# @app.route('/index')
-# def index():
-
-#     solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
-#     # results = solr.search("*:*")
-#     params = {'rows': '100','facet':'on', 'facet.field':'tweet_lang'} 
-#     results = solr.search("*:*", **params)
-
-#     lang_info = results.facets['facet_fields']['tweet_lang']
-#     filtered_lang_info = dict()
-
-
-#     for i in range(0,len(lang_info),2):
-#         filtered_lang_info[lang_info[i]] = lang_info[i+1]
-
-#     print(filtered_lang_info)
-    
-#     return render_template('index.html',tweets=results, lang_info=filtered_lang_info)
