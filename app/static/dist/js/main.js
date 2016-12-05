@@ -196,25 +196,12 @@ $(function(){
 	});
     
 
-	$('.Collage').collagePlus
-	 ({
-		 /*
-		* The ideal height you want your row to be. It won't set it exactly to this as
-		* plugin adjusts the row height to get the correct width
-		*/
-		'targetHeight'    : 500,
-		'effect' : "effect-4",
-		   /*
-		* vertical: effects applied per row to give the impression of descending appearance
-		* horizontal: effects applied in order of appearance in the row to give a horizontal appearance
-		*/
-		   'direction'       : 'horizontal',
-		
-		   /*
-		   * Sometimes there is just one image on the last row and it gets blown up to a huge size to fit the
-		   * parent div width. To stop this behaviour, set this to true
-		   */
-		   'allowPartialLastRow'       : false
-	 });
+//	$('.Collage').collagePlus
+//	 ({
+//		'targetHeight'    : 600,
+//		'effect' : "effect-4",
+//	   'direction'       : 'horizontal',
+//	   'allowPartialLastRow'       : false
+//	 });
 
 });
