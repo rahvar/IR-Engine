@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+    # -*- coding: utf-8 -*-
 from app import app
 from flask import render_template
 from flask import request
@@ -29,10 +29,10 @@ def query():
     search_string = request.args.get('usrquery', '')
     tweet_language = request.args.get('lang','')
     
-    boost_language = 'text_%s _text_' % selected_language
+    boost_language = 'tweet_lang:%s^3' % selected_language
 
     # base case params
-    params = {'facet':'on', 'facet.field':'{!ex=dt}tweet_lang', 'rows':100,'defType':'edismax','qf':boost_language}
+    params = {'facet':'on', 'facet.field':'{!ex=dt}tweet_lang', 'rows':100,'defType':'edismax','bq':boost_language}
 
     # if not query, display everything
     if search_string == '' or search_string == 'undefined':
@@ -66,29 +66,40 @@ def query():
     
     tweet_text = ''
     count = 0
+    image_count = 0
+    image_list = []
     
     escaped_text = re.escape(string.punctuation)
-    
     for tweet in results:
+        if count <= 3:
+            text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
+            tweet_text = '%s %s' % (tweet_text,text)
         count += 1
-        text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
-        tweet_text = '%s %s' % (tweet_text,text)
         
-        if count > 3:
+        if tweet.get('media'):
+            print (tweet['media'])
+            image_list.append(tweet['media'][0])
+            image_count += 1
+
+        if image_count > 3 and count > 3:
             break
-    tweet_text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet_text, flags=re.MULTILINE)
+    tweet_text = tweet_text = re.sub(r'http\S+', '', tweet_text)
     tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
 
     alchemy_response = {}
     if search_string != '*:*':
-        alchemy_response = json.dumps(
-        alchemy_language.combined(
-          text=tweet_text,
-          extract='entities,keywords',
-          sentiment=1,
-          max_items=1),
-        indent=2)
-    
+        try:
+            alchemy_response = json.dumps(
+            alchemy_language.combined(
+              text=tweet_text,
+              extract='entities,keywords',
+              sentiment=1,
+              max_items=1),
+            indent=2)
+        except Exception:
+            print ("Failed",Exception)
+            pass
+
     tags = []
     dbpedia_link = ''
     
@@ -114,7 +125,7 @@ def query():
         summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
         print(summary_data)
 
-    return render_template('index.html',lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data)
+    return render_template('index.html',lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list)
 
 @app.route('/tags',methods=['POST'])
 def tags():

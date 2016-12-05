@@ -2107,7 +2107,7 @@ pre code {
     width: 75%;
   }
   .col-lg-8 {
-    width: 66.66666667%;
+    width: 70%;
   }
   .col-lg-7 {
     width: 58.33333333%;
@@ -2118,8 +2118,12 @@ pre code {
   .col-lg-5 {
     width: 41.66666667%;
   }
-  .col-lg-4 {
+/*  .col-lg-4 {
     width: 33.33333333%;
+  }*/
+
+  .col-lg-4 {
+    width: 29%;
   }
   .col-lg-3 {
     width: 25%;

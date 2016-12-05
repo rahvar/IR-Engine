@@ -51,7 +51,7 @@
             left:13%;
         }
 
-        .fa-language {
+        .fa-language,.fa-cubes {
             display: inline-block;
             position: relative;
             left:5%; 
@@ -66,9 +66,6 @@
             margin-top: 1%;
         }
 
-        .navbar-default.sidebar {
-            
-        }
 
     </style>
 
@@ -88,9 +85,10 @@
 
             <!-- /.navbar-top-links -->
 
-            {% if lang_info%}
+            
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav">
+                    {% if lang_info%}
                     <i class="fa fa-language fa-2x"></i><h4 class="lang_logo_text"> Languages </h4>
                     <div class="nav lang-filter">
                         <div id="langs">
@@ -104,9 +102,22 @@
                         {% endfor %}
                         </div>
                     </div>
+                    {% endif %}
+
+                    <i class="fa fa-cubes fa-2x"></i><h4 class="lang_logo_text"> Analytics </h4>
+                    <div class="nav lang-filter">
+                        <div id="analytics">          
+                            <div class="sidebar-list-items">
+                                <a href="/maps"> Density Map </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+
                 </div>
             </div>
-            {% endif %}           
+          
 
             <!-- /.navbar-static-side -->
         </nav>
@@ -142,40 +153,22 @@
             <div class="row">
                 <div class="col-lg-8">
 
-<!--                 	<div class="panel panel-primary">
-                    	<div id="query_tags" class="panel-body tag_style" style="overflow:auto;">
-                    		{% if tags is not defined %}
-                            	<span style="background-color:white;color:grey;font-size:90%;padding:0px;">Tags..</span>
-                           	{% endif %}
-                            {% if tags is defined %}
-	                            {% for tag in tags %}
-                            		<span>{{tag}}</span>&nbsp;
-	                            {% endfor %}
-                            {% endif %}
-                        </div>
-                        
-                    </div> -->
+                    {% if image_list is defined %}
+                       <div class="panel panel-primary">
+                           <div class="panel-heading">
+                               Images
+                           </div>
+                           <section class="panel-body image-panel">
+                               <div></div>
+                               {% for image in image_list %}
+                                   <img src={{image}} width="1">
+                               {% endfor %}
+                           </section>
+                       </div>
+                    {% endif %}
 
-                	<div class="panel panel-primary">
-                    	<div class="panel-heading">
-                            Images
-                        </div>
-                        <section class="panel-body Collage">
-                        	<div></div>
-                        	<img src="../static/dist/img/english.png">
-                        	<img src="../static/dist/img/portuguese.png" >
-                        	<img src="../static/dist/img/spanish.png" >
-                        	<img src="../static/dist/img/english.png" >
-                        	<img src="../static/dist/img/portuguese.png" >
-                        	<img src="../static/dist/img/spanish.png" >
-                        	<img src="../static/dist/img/english.png">
-                        	<img src="../static/dist/img/portuguese.png" >
-                        	<img src="../static/dist/img/spanish.png">
-                        	<img src="../static/dist/img/english.png" >
-                        	<img src="../static/dist/img/portuguese.png" >
-                        	<img src="../static/dist/img/spanish.png" >
-                        </section>
-                    </div>
+                    <!-- </div> -->
+
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <i class="fa fa-twitter"></i>  Tweets for the query
@@ -184,7 +177,7 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body tweet-list" >
                         <div id="page-nav"></div>
-                           <div class="qa-message-list" id="wallmessages">    
+                           <div class="qa-message-list" id="wallmessages" style="overflow:scroll;height:500px;">    
                                 
                                 {% for tweet in tweets %}       
                                 <div class="message-item paginate" data-lang="{{tweet.tweet_lang[0]}}">
@@ -201,6 +194,7 @@
                             </div> 
                                     
                         </div>
+
                     </div>
                     <!-- /.panel -->
                 </div>
@@ -276,8 +270,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
 	<script src="{{ url_for('.static', filename='dist/js/main.js') }}"></script>
-    <script src="{{ url_for('.static', filename='dist/js/jquery.collagePlus.min.js') }}"></script>
-    <script src="{{ url_for('.static', filename='dist/js/custom.js') }}"></script>    
+ 
 </body>
 
 </html>
