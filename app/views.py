@@ -63,3 +63,35 @@ def tags():
     results = solr.search("*:*", **params)
 
     return jsonify(results.facets['facet_fields']['hashtags'])
+
+@app.route('/morelikethis')
+def morelikethis():
+    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    
+    tweet_id = request.args.get('similar')
+
+    print('id:'+tweet_id)
+    
+    params = {'mlt':'true','mlt.mintf':'7','mlt.fl':'_text_','mlt.mindf':'1','rows':100}   
+
+    similar = solr.more_like_this('id:'+str(tweet_id), mltfl='_text_', **params)
+    
+    if len(similar)==0:
+          similar = solr.search('id:'+tweet_id)
+    
+    return render_template('index.html',tweets=similar)
+
+@app.route('/maps')
+def maps():
+    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    params = {'rows': '1000000'} 
+    results = solr.search("tweet_lat:*",**params)
+    locations = list()
+    #info = dict()
+    for r in results:
+        info = dict()
+        info['lat'] = r['tweet_lat'][0]
+        info['lng'] = r['tweet_long'][0]
+        locations.append(info)
+    
+    return render_template('maps.html',results=json.dumps(locations))

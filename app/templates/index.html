@@ -259,6 +259,7 @@
             </ul>
             <!-- /.navbar-top-links -->
 
+            {% if lang_info%}
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
@@ -268,11 +269,11 @@
                                     <div id="langs">
 
                                         {% for lang, value in lang_info.items()|sort %}
-                                    
-                                        <li>
-                                            <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{value[2]|e}}    {{value[0]|e}}
-                                            <br/>
-                                        </li>
+                                        
+                                            <li>
+                                                <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{value[2]|e}}    {{value[0]|e}}
+                                                <br/>
+                                            </li>
 
                                         {% endfor %}
                                     </div>
@@ -282,6 +283,7 @@
                 </div>
                 <!-- /.sidebar-collapse -->
             </div>
+            {% endif %}
             <!-- /.navbar-static-side -->
         </nav>
 
@@ -317,13 +319,17 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body tweet-list" >
                         <div id="page-nav"></div>
-                           <div class="qa-message-list" >    
+                           <div class="qa-message-list" id="wallmessages">    
                                 
                                 {% for tweet in tweets %}       
-                                <div class="message-item" data-lang="{{tweet.tweet_lang[0]}}">
-                                    <div class="qa-message-content paginate">
+                                <div class="message-item paginate" data-lang="{{tweet.tweet_lang[0]}}">
+                                    <div class="qa-message-content ">
                                         {{tweet.html[0]|safe}}
                                     </div>
+                                    <div class="qa-message-content">
+                                        <a href="/morelikethis?similar={{tweet.id}}"><button id="main-search-btn" class="btn btn-default" type="submit"> More Like this </button></a>
+                                    </div>
+
                                 </div>
                                 {% endfor %} 
 

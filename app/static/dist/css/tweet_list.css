@@ -107,3 +107,7 @@ img {
  min-height: 40px;
  max-height: 40px;
 }
+
+.qa-message-mlt {
+	position: relative;
+}
