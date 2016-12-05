@@ -14,13 +14,13 @@ import string
 import os
 from collections import Counter
 
-def lang_map(language):
-    language_map = {'en':'English','fr':'French','ru':'Russian','es':'Spanish','pt':'Portuguese'}
-    return language_map[language]
-
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
 HOST = 'http://52.36.178.24:8983/solr/prj4/'
 LANGUAGES = ['en','es','pt','fr']
+
+def lang_map(language):
+    language_map = {'en':'English','fr':'French','ru':'Russian','es':'Spanish','pt':'Portuguese'}
+    return language_map[language]
 
 @app.route('/')
 @app.route('/query',methods=['GET'])
