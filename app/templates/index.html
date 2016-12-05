@@ -12,7 +12,6 @@
     <title>Go Search!</title>
 
     <!-- Bootstrap Core CSS -->
-
     <link href="{{ url_for('.static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
@@ -22,11 +21,7 @@
     <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
     <link href="{{ url_for('.static', filename='dist/css/transitions.css') }}" rel="stylesheet">
     <link href="{{ url_for('.static', filename='dist/css/custom_style.css') }}" rel="stylesheet">
-<!--     <link href="{{ url_for('.static', filename='dist/css/map.css') }}" rel="stylesheet">
-	<link href="{{ url_for('.static', filename='dist/css/nice-select.css') }}" rel="stylesheet">
-	<link href="{{ url_for('.static', filename='dist/css/style.css') }}" rel="stylesheet">
-	<link href="{{ url_for('.static', filename='dist/css/dd.css') }}" rel="stylesheet">
-	<link href="{{ url_for('.static', filename='dist/css/flags.css') }}" rel="stylesheet"> -->
+    
 
     <!-- Morris Charts CSS -->
     <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}" rel="stylesheet">
@@ -35,14 +30,9 @@
     <!-- Custom Fonts -->
     <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('.static', filename='vendor/custom/css/index.css') }}" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
+	<link href="{{ url_for('.static', filename='bubble/css/style.css') }}" rel="stylesheet">
+    <!-- <link href="{{ url_for('.static', filename='bubble/css/reset.css') }}" rel="stylesheet"> -->
+    
 </head>
 
 <body>
@@ -467,7 +457,12 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <!-- /.panel -->
+                    <!-- <div id="container" class="container">
+					  <div id="main" role="main">
+					    <div id="vis"></div>
+					    <div id="status"></div>
+					  </div>
+					</div> -->
                 </div>
                 <!-- /.col-lg-8 -->
                 <div class="col-lg-4">
@@ -486,7 +481,7 @@
                         <!-- /.panel-body -->
                     </div>
                 </div>
-                <!-- /.col-lg-4 -->
+                
                 <div class="col-lg-4">
                 	<!-- <div id="regions_div" style="width: 900px; height: 500px;"></div> -->
                 	<div class="panel panel-default">
@@ -499,10 +494,10 @@
 							{% endif %}
                         </div>
                     </div>
-                        
-					</div>
-                    
-               	</div>
+				</div>
+                
+          	</div>
+               	
             </div>
             <!-- /.row -->
         </div>
@@ -554,6 +549,13 @@
     <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
     <script src="{{ url_for('.static', filename='dist/js/jquery.collagePlus.min.js') }}"></script>
     <script src="{{ url_for('.static', filename='dist/js/custom.js') }}"></script>
+    
+    <script src="{{ url_for('.static', filename='bubble/js/libs/coffee-script.js') }}"></script>
+    <script src="{{ url_for('.static', filename='bubble/js/libs/d3.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='bubble/js/vis.js') }}"></script>
+	  <script type="text/javascript">
+	  </script>
+    
 </body>
 
 </html>

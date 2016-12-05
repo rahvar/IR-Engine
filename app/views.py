@@ -12,11 +12,12 @@ from watson_developer_cloud import AlchemyLanguageV1
 import ast
 import re 
 import string
+import os
 # from SPARQLWrapper import SPARQLWrapper, JSON, XML, N3, RDF
-
+from collections import Counter
 
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
-HOST = 'http://localhost:8983/solr/prj4/'
+HOST = 'http://52.36.178.24:8983/solr/prj4/'
 LANGUAGES = ['en','es','pt','fr']
 
 @app.route('/query',methods=['GET'])
@@ -26,21 +27,28 @@ def query():
     if search_string == '':
         search_string = '*:*'
     solr = pysolr.Solr(HOST, timeout=10)
-    # params = {'rows': '100'} 
-    results = solr.search(search_string)
+    
+    params = {'rows': '1000','defType':'edismax','qf':'text_en^2 _txt_'} 
+    results = solr.search(search_string,**params)
     
     tweet_text = ''
     count = 0
-    for tweet in results:
-        count += 1
-        tweet_text = '%s %s' % (tweet_text,str(tweet['tweet_text'][0]).replace('[','').replace(']',''))
-        if count > 3:
-            break
     
     escaped_text = re.escape(string.punctuation)
-    tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
-    tweet_text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet_text, flags=re.MULTILINE)
     
+    for tweet in results:
+        count += 1
+        print(tweet)
+        text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
+#         text = re.sub(r'['+escaped_text+']', '',text)
+#         text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
+        tweet_text = '%s %s' % (tweet_text,text)
+        
+        if count > 3:
+            break
+    tweet_text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet_text, flags=re.MULTILINE)
+    tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
+
     alchemy_response = {}
     if search_string != '*:*':
         alchemy_response = json.dumps(
@@ -54,6 +62,7 @@ def query():
     alchemy_response = ast.literal_eval(alchemy_response)
     
     tags = []
+    dbpedia_link = ''
     for alchemy_result in alchemy_response.get('entities'):
         if alchemy_result.get('disambiguated'):
             if alchemy_result['disambiguated'].get('subType'):
@@ -63,26 +72,28 @@ def query():
                 dbpedia_link = alchemy_result['disambiguated'].get('dbpedia')
     
 #     Get Summary text
-    subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
-#     sparql = SPARQLWrapper("http://dbpedia.org/sparql")
-#     sparql.setQuery("""
-#         PREFIX dbres: <http://dbpedia.org/resource/>
-#         DESCRIBE dbres:%s
-#     """) % subject
-#     sparql.setReturnFormat(JSON)
-#     results = sparql.query().convert()
-#     for result in results["results"]["bindings"]:
-#         print result
-#                 
-    summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
-    response = urlopen(summary_link)
-    summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
-    summary_data = summary_data[list(summary_data.keys())[0]]['extract']
-    summary_data = (data[:75] + '..') if len(data) > 75 else data
-    print(summary_data)
-#     summary_data='aaa'
-#     
-    
+    summary_data = ''
+    if dbpedia_link != '':
+        subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
+        summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
+        response = urlopen(summary_link)
+        summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+        summary_data = summary_data[list(summary_data.keys())[0]]['extract']
+        summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
+        print(summary_data)
+
+#     words_list = tweet_text.lower().replace('.','').replace('\n',' ').split(' ')
+#     counter = Counter(words_list)
+#     fopen = open('app/static/bubble/data/new_file.csv','w')
+#     fopen.write("\"name\",\"word\",\"count\"")
+#     fopen.write('\n')
+#     for i in counter:
+#         if counter[i] > 1 and i not in ['','i','the','to','a','to','him','of','el']:
+#             str1 = '\"%s\",\"%s\",%s' % (i,i,counter[i])
+#     #         fopen.write("\""+i+"\","+"\""+i+"\""+counter[i])
+#             fopen.write(str1)
+#             fopen.write('\n')
+        
 #     print("alchemy_response",alchemy_response)
 #     alchemy_dict = ast.literal_eval(alchemy_response)
     
