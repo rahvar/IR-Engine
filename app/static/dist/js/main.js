@@ -1,5 +1,8 @@
 $(function(){    
 
+    // Setting date slider on page startup
+    setDateSlider();
+
     // Resetting the language filters
     function resetLangFilters() {
         // Resetting the language filters
@@ -14,14 +17,34 @@ $(function(){
         sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
     }
 
-    // Resetting the date slider info
+    // resetting date slider
     function resetDateSlider() {
-        // Set the dates to the min and max value
-        var dateSilderInfo = {};
-        // dateSilderInfo['minDate'] = ;
-        // dateSilderInfo['maxDate'] =  ;
-        sessionStorage.removeItem('dateSilderInfo');
-        sessionStorage.setItem('dateSilderInfo',JSON.stringify(dateSilderInfo));
+        if(sessionStorage.getItem('dateSilderInfo') !== null)
+            sessionStorage.removeItem('dateSilderInfo');
+    }
+
+    // Resetting the date slider info
+    function setDateSlider() {
+
+        var dateInf = JSON.parse($('#datefromserver').text());
+
+        $("#dateSlider").dateRangeSlider({
+            bounds:{
+              min: new Date(dateInf[0].y,dateInf[0].m-1,dateInf[0].d),
+              max: new Date(dateInf[1].y,dateInf[1].m-1,dateInf[1].d)
+            }
+        });
+
+        if(sessionStorage.getItem('dateSilderInfo') !== null) {
+
+            var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+        
+            console.log(dateSilderInfo)
+
+            $("#dateSlider").dateRangeSlider("values", 
+                new Date(dateSilderInfo['minDate']), 
+                new Date(dateSilderInfo['maxDate']));               
+        }            
     }
 
     // All page resets
@@ -156,43 +179,60 @@ $(function(){
         if (langs_selected != '') {
             uri += '&lang=' + langs_selected;
         }
+
+        // if(sessionStorage.getItem('dateSilderInfo') != null) 
+        //     uri += 
+
         //alert(uri)
         window.location.assign(uri) 
     });
 
     // reinstate the previous state from session
-    if(sessionStorage.getItem('dateSilderInfo') != null) {
+    // if(sessionStorage.getItem('dateSilderInfo') != null) {  
 
-        var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+    //     var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
 
-        $("#dateSlider").dateRangeSlider({
-          bounds:{
-            min: dateSilderInfo['minDate'],
-            max: dateSilderInfo['maxDate']
-        }});
-    }    
+    //     $("#dateSlider").dateRangeSlider({
+    //       bounds:{
+    //         min: dateSilderInfo['minDate'],
+    //         max: dateSilderInfo['maxDate']
+    //     }});
+    // }    
 
     // Date slider 
     $("#dateSlider").bind("userValuesChanged", function(event, data){
         
+        var dateSilderInfo = {};
+
         console.log("Something moved. min: " + data.values.min + " max: " + data.values.max);
         var minDate = data.values.min;
         var maxDate = data.values.max;
 
-        // Check if its same date in the session
-        if (sessionStorage.getItem('dateSilderInfo') !== null) {
-            var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
-            var startDate = dateSilderInfo['minDate'];
-            var endDate = dateSilderInfo['maxDate'];
+        dateSilderInfo['minDate'] = data.values.min;
+        dateSilderInfo['maxDate'] = data.values.max;
+        dateSilderInfo['fulldate'] = data.values;
 
-            if(startDate == minDate && endDate == maxDate) {
-                event.preventDefault();
-            }
-        }
+        // Check if its same date in the session
+        // if (sessionStorage.getItem('dateSilderInfo') !== null) {
+        //     var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+        //     var startDate = dateSilderInfo['minDate'];
+        //     var endDate = dateSilderInfo['maxDate'];
+
+        //     if(startDate == minDate && endDate == maxDate) {
+        //         event.preventDefault();
+        //     }
+        // }
        
         // Store the date in session
-        var dateSilderInfo = {'minDate':minDate,'maxDate':maxDate};
-        sessionStorage.setItem('dateSilderInfo'.JSON.stringify(dateSilderInfo)); 
+
+        
+        if(sessionStorage.getItem('dateSilderInfo') !== null)
+            sessionStorage.removeItem('dateSilderInfo'); 
+
+        sessionStorage.setItem('dateSilderInfo',JSON.stringify(dateSilderInfo));
+
+        console.log("Inside userValuesChanged: " +  new Date(dateSilderInfo['minDate']) + dateSilderInfo['maxDate'])
+
 
         // format - 2016-12-05T00:00:00Z
         var lMonth = parseInt(minDate.getMonth())+ 1;
@@ -200,8 +240,8 @@ $(function(){
         var lowerDate =  minDate.getFullYear() + '-' + lMonth+'-'+ minDate.getDate()+'T00:00:00Z';
         var upperDate =  maxDate.getFullYear() + '-' + uMonth + '-'+maxDate.getDate()+'T00:00:00Z';
 
-        // console.log(lowerDate);
-        // console.log(upperDate);
+        console.log(lowerDate);
+        console.log(upperDate);
         
         // Retrieve the query from the session
         var query = sessionStorage.getItem('usrquery');
@@ -209,7 +249,7 @@ $(function(){
         var uri = '/query?usrquery='+ query;
         uri += '&datefrom='+lowerDate+'&dateto='+upperDate;
 
-        //window.location.assign(uri)
+        window.location.assign(uri)
     });
 
 
@@ -234,17 +274,17 @@ $(function(){
     		{
             	var lang_map = {'english':'en','spanish':'es','portuguese':'pt','french':'fr'}
             	var languages = ['english','spanish','portuguese','french'];
-            	console.log(data);
+            	//console.log(data);
             	if (languages.indexOf(data.language)<0)
         		{
             		data.language='english';
-            		console.log(lang_map[data.language]);
+            		//console.log(lang_map[data.language]);
         		}
         		$('.lang-select').val(lang_map[data.language]);
             })
             .fail(function() 
     		{
-                console.log("error");
+                //console.log("error");
             })
 		}
 	});

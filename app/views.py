@@ -33,11 +33,11 @@ def query():
     tweet_language = request.args.get('lang','')
 
     # DATE ARGS
-    from_date = request.args.get('datefrom')
-    to_date = request.args.get('dateto')
+    from_date = request.args.get('datefrom','')
+    to_date = request.args.get('dateto','')
     
-    print(from_date)
-    print(to_date)
+    # print(from_date)
+    # print(to_date)
 
     # Query Boosting
     boost_language = 'tweet_lang:%s^3' % selected_language
@@ -57,7 +57,17 @@ def query():
             fq_content += "tweet_lang:"+lang+' '
         params['fq'] = '{!tag=dt}'+fq_content
 
+        if from_date and to_date:
+            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
+            params['fq'] += ' ' + date_range
+    else:
+        if from_date and to_date:
+            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
+            params['fq'] = date_range
+
     solr = pysolr.Solr(HOST, timeout=10)
+
+    print(params)
     
     results = solr.search(search_string, **params)
 
@@ -84,7 +94,6 @@ def query():
     """
      ---------- LANGUAGE FACETING ENDS HERE ------
     """
-    
 
     """
      ---------- DATE FACETING STARTS HERE ------
@@ -120,7 +129,7 @@ def query():
         count += 1
         
         if tweet.get('media'):
-            print (tweet['media'])
+            # print (tweet['media'])
             image_list.append(tweet['media'][0])
             image_count += 1
 
@@ -167,7 +176,8 @@ def query():
         summary_data = summary_data[list(summary_data.keys())[0]]['extract']
         summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
         print(summary_data)
-    print(date_info)
+
+    #print(date_info)
 
 
     # Return the results and render it on the html page
