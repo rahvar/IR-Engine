@@ -19,7 +19,7 @@ import requests
 from xml.etree import ElementTree
 
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
-HOST = 'http://35.165.140.166:8983/solr/prj4/'
+HOST = 'http://localhost:8983/solr/prj4/'
 # LANGUAGES = ['en','es','pt','fr','ru']
 
 def lang_map(language):
