@@ -15,9 +15,20 @@ $(function(){
         sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
     }
 
+    // Resetting the date slider info
+    function resetDateSlider() {
+        // Set the dates to the min and max value
+        var dateSilderInfo = {};
+        // dateSilderInfo['minDate'] = ;
+        // dateSilderInfo['maxDate'] =  ;
+        sessionStorage.removeItem('dateSilderInfo');
+        sessionStorage.setItem('dateSilderInfo',JSON.stringify(dateSilderInfo));
+    }
+
     // All page resets
     function pageResets() {
         resetLangFilters();
+        resetDateSlider();
     }
 
     // Setting the query into session when submitting
@@ -152,19 +163,65 @@ $(function(){
         window.location.assign(uri) 
     });
 
+    // reinstate the previous state from session
+    if(sessionStorage.getItem('dateSilderInfo') != null) {
+
+        var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+
+        $("#dateSlider").dateRangeSlider({
+          bounds:{
+            min: dateSilderInfo['minDate'],
+            max: dateSilderInfo['maxDate']
+        }});
+    }    
+
+    // Date slider 
+    $("#dateSlider").bind("userValuesChanged", function(event, data){
+        
+        console.log("Something moved. min: " + data.values.min + " max: " + data.values.max);
+        var minDate = data.values.min;
+        var maxDate = data.values.max;
+
+        // Check if its same date in the session
+        if (sessionStorage.getItem('dateSilderInfo') !== null) {
+            var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+            var startDate = dateSilderInfo['minDate'];
+            var endDate = dateSilderInfo['maxDate'];
+
+            if(startDate == minDate && endDate == maxDate) {
+                event.preventDefault();
+            }
+        }
+       
+        // Store the date in session
+        var dateSilderInfo = {'minDate':minDate,'maxDate':maxDate};
+        sessionStorage.setItem('dateSilderInfo'.JSON.stringify(dateSilderInfo)); 
+
+        // format - 2016-12-05T00:00:00Z
+        var lMonth = parseInt(minDate.getMonth())+ 1;
+        var uMonth = parseInt(maxDate.getMonth())+ 1;
+        var lowerDate =  minDate.getFullYear() + '-' + lMonth+'-'+ minDate.getDate()+'T00:00:00Z';
+        var upperDate =  maxDate.getFullYear() + '-' + uMonth + '-'+maxDate.getDate()+'T00:00:00Z';
+
+        // console.log(lowerDate);
+        // console.log(upperDate);
+        
+        // Retrieve the query from the session
+        var query = sessionStorage.getItem('usrquery');
+    
+        var uri = '/query?usrquery='+ query;
+        uri += '&datefrom='+lowerDate+'&dateto='+upperDate;
+
+        //window.location.assign(uri)
+    });
+
+
 	//Detect language from search bar
     $('.search-bar').keydown(function(e)
 	{
     	var keycode1 = (e.keyCode ? e.keyCode : e.which);
     	if (keycode1 == 8)
     		return;
-    	
-//        if (keycode1 == 0 || keycode1 == 9) 
-//        {
-//        	$('.search-bar').css({background:'yellow'});
-//            e.preventDefault();
-//            e.stopPropagation();
-//        }
     	
         var query_text = $('.search-bar').val();
         if (query_text.split(' ').length > 2)
@@ -194,5 +251,43 @@ $(function(){
             })
 		}
 	});
+
+
+
+    // Maps
+    var map;
+    function initMap() {
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8 ,
+          center: {lat: -28.024, lng: 140.887}
+        });
+
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+        // var markers = locations.map(function(location, i) {
+        //   return new google.maps.Marker({
+        //     position: location,
+        //     label: labels[i % labels.length]
+        //   });
+        // });
+
+        // Add a marker clusterer to manage the markers.
+    //     var markerCluster = new MarkerClusterer(map, markers,
+    //         { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+    // 
+    }
+
+
+    google.maps.event.addDomListener(window, 'load', initMap);
+
+    $('#myModal').on('shown.bs.modal', function () {
+        google.maps.event.trigger(map, "resize");
+    });
 
 });

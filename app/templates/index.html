@@ -1,276 +1,173 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
+{% block title %}Go Search{% endblock %}
 
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Go Search!</title>
-
-    <!-- Bootstrap Core CSS -->
-
-    <link href="{{ url_for('.static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-
-    <!-- MetisMenu CSS -->
-    <link href="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.css') }}" rel="stylesheet">
-
-    <!-- Custom CSS -->
-    <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
-    <link href="{{ url_for('.static', filename='dist/css/tweet_list.css') }}" rel="stylesheet">
-    <link href="{{ url_for('.static', filename='dist/css/simplePagination.css') }}" rel="stylesheet">
-    <link href="{{ url_for('.static', filename='dist/css/transitions.css') }}" rel="stylesheet">
-    <link href="{{ url_for('.static', filename='dist/css/custom_style.css') }}" rel="stylesheet">
-    
-
-    <!-- Morris Charts CSS -->
-    <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
- rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
-
-    <!-- Application Icon -->
-    <link rel="icon" href="{{ url_for('.static', filename='dist/img/machine.png') }}">
-
+{% block head %}
+    {{ super() }}
     <style type="text/css">
-        
-        .sidebar-list-items {
-            position: relative;
-            left:15%;
-            font-size: 1.2em;
-        }
-
-        .lang_logo_text {
-            display: inline-block;
-            font-size: 1.6em;
-            position: relative;
-            left:13%;
-        }
-
-        .fa-language,.fa-cubes {
-            display: inline-block;
-            position: relative;
-            left:5%; 
-            margin-top: 20%;
-        }
-
-        .navbar-static-top{
-            margin-top: 10px;
-        }
 
         .top-search-bar {
             margin-top: 1%;
         }
 
+/*        #map{
+          height: 300px;
+          width: 600px;  
+        }*/
+
+        #map {
+            position: relative;
+            left: 15%;  
+            height: 300px;
+            width: 800px;
+        }
 
     </style>
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-
-            <div class="navbar-header">
-                <i class="fa  fa-gears fa-3x"></i><a class="navbar-brand home-btn" href="/">Go Search</a> 
-            </div>
-            <!-- /.navbar-header -->
-
-            <!-- /.navbar-top-links -->
-
-            
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav">
-                    {% if lang_info%}
-                    <i class="fa fa-language fa-2x"></i><h4 class="lang_logo_text"> Languages </h4>
-                    <div class="nav lang-filter">
-                        <div id="langs">
-                        {% for lang, value in lang_info.items()|sort %}
-                        
-                            <div class="sidebar-list-items">
-                                <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{value[2]|e}}    {{value[0]|e}}
-                                <br/>
-                            </div>
-
-                        {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <i class="fa fa-cubes fa-2x"></i><h4 class="lang_logo_text"> Analytics </h4>
-                    <div class="nav lang-filter">
-                        <div id="analytics">          
-                            <div class="sidebar-list-items">
-                                <a href="/maps"> Density Map </a>
-                            </div>
-                        </div>
-                    </div>
+{% endblock %}
 
 
-
+{% block body %}
+	{{ super() }}
+    <div id="page-wrapper">
+        <!-- /.col-lg-12 -->
+        <div class="row">
+            <div class="col-lg-12 top-search-bar">
+            <form class="form-inline" action="/query" method="get" id="user-search">
+                <div class="input-group custom-search-form col-lg-12">
+                    <select class="form-control lang-select" style="width:15%" 
+                    		name="lang-select" title="Results will be given preference in this language">
+                    	<option value="en">English</option>
+                    	<option value="es">Español</option>
+                    	<option value="pt">Português</option>
+                    	<option value="fr">Français</option>
+                    </select>
+                    <input style="float:left;width:85%" type="text" class="form-control search-bar" 
+                    		placeholder="Search..." name="usrquery">
+                    <span class="input-group-btn" style="vertical-align:top;">
+                        <button id="main-search-btn" class="btn btn-default" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
                 </div>
+            </form>
             </div>
-          
-
-            <!-- /.navbar-static-side -->
-        </nav>
-
-                                    <!-- End of Navigation Bar -->
-
-        <div id="page-wrapper">
             <!-- /.col-lg-12 -->
-            <div class="row">
-                <div class="col-lg-12 top-search-bar">
-                <form class="form-inline" action="/query" method="get" id="user-search">
-                    <div class="input-group custom-search-form col-lg-12">
-                        <select class="form-control lang-select" style="width:15%" 
-                        		name="lang-select" title="Results will be given preference in this language">
-                        	<option value="en">English</option>
-                        	<option value="es">Español</option>
-                        	<option value="pt">Português</option>
-                        	<option value="fr">Français</option>
-                        </select>
-	                    <input style="float:left;width:85%" type="text" class="form-control search-bar" 
-	                    		placeholder="Search..." name="usrquery">
-	                    <span class="input-group-btn" style="vertical-align:top;">
-	                        <button id="main-search-btn" class="btn btn-default" type="submit">
-	                            <i class="fa fa-search"></i>
-	                        </button>
-	                    </span>
-                    </div>
-                </form>
-                </div>
-                <!-- /.col-lg-12 -->
-            </div>
-
-            <div class="row">
-                <div class="col-lg-7">
-
-                    {% if image_list is defined %}
-                       <div class="panel panel-primary">
-                           <div class="panel-heading">
-                               Images
-                           </div>
-                           <section class="panel-body image-panel">
-                               <div></div>
-                               {% for image in image_list %}
-                                   <img src={{image}} width="1">
-                               {% endfor %}
-                           </section>
-                       </div>
-                    {% endif %}
-
-                    <!-- </div> -->
-
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">
-                            <i class="fa fa-twitter"></i>  Tweets for the query
-                        </div>
-
-                        <!-- /.panel-heading -->
-                        <div class="panel-body tweet-list" >
-                        <div id="page-nav"></div>
-                           <div class="qa-message-list" id="wallmessages" style="overflow:scroll;height:500px;">    
-                                
-                                {% for tweet in tweets %}       
-                                <div class="message-item paginate" data-lang="{{tweet.tweet_lang[0]}}">
-                                    <div class="qa-message-content ">
-                                        {{tweet.html[0]|safe}}
-                                    </div>
-                                    <div class="qa-message-content">
-                                        <a href="/morelikethis?similar={{tweet.id}}"><button id="main-search-btn" class="btn btn-default" type="submit"> More Like this </button></a>
-                                    </div>
-
-                                </div>
-                                {% endfor %} 
-
-                            </div> 
-                                    
-                        </div>
-
-                    </div>
-                    <!-- /.panel -->
-                </div>
-                <!-- /.col-lg-8 -->
-                <div class="col-lg-5">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Trending Tags
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="list-group trending-tags"><!-- Filled dynamically --></div>
-                            <!-- /.list-group -->
-                            <!-- <a href="#" class="btn btn-default btn-block">View All Alerts</a> -->
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                </div>
-                
-                <div class="col-lg-5">
-                	<div class="panel panel-default">
-                        <div class="panel-heading">
-                            Summary
-                        </div>
-                        <div class="panel-body">
-                        	{% if summary is defined %}
-								{{summary}}
-							{% endif %}
-                        </div>
-                    </div>
-				</div>
-
-                <div class="col-lg-5">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            Tagging
-                        </div>
-                        <div id="query_tags" class="panel-body tag_style" style="overflow:auto;">
-                            {% if tags is not defined %}
-                                <span style="background-color:white;color:grey;font-size:90%;padding:0px;">Tags..</span>
-                            {% endif %}
-                            {% if tags is defined %}
-                                {% for tag in tags %}
-                                    <span>{{tag}}</span>&nbsp;
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                        
-                    </div>
-                </div>
-                
-          	</div>
-               	
-            </div>
-            <!-- /.row -->
         </div>
-        <!-- /#page-wrapper -->
 
+        <div class="row">
+            <div class="col-lg-7">
+
+                {% if image_list is defined %}
+                   <div class="panel panel-primary">
+                       <div class="panel-heading">
+                           Images
+                       </div>
+                       <section class="panel-body image-panel">
+                           <div></div>
+                           {% for image in image_list %}
+                               <img src={{image}} width="1">
+                           {% endfor %}
+                       </section>
+                   </div>
+                {% endif %}
+
+                
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <i class="fa fa-twitter"></i>  Tweets for the query
+                    </div>
+
+                    
+                    <div class="panel-body tweet-list" >
+                    <div id="page-nav"></div>
+                       <div class="qa-message-list" id="wallmessages" style="overflow:scroll;height:500px;">    
+                            
+                            {% for tweet in tweets %}       
+                            <div class="message-item paginate" data-lang="{{tweet.tweet_lang[0]}}">
+                                <div class="qa-message-content ">
+                                    {{tweet.html[0]|safe}}
+                                </div>
+                                <div class="qa-message-content">
+                                    <a href="/morelikethis?similar={{tweet.id}}"><button id="main-search-btn" class="btn btn-default" type="submit"> More Like this </button></a>
+                                </div>
+
+                            </div>
+                            {% endfor %} 
+
+                        </div> 
+                                
+                    </div>
+
+                </div>
+       
+            </div>
+   
+            <div class="col-lg-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Trending Tags
+                    </div>
+                    <!-- /.panel-heading -->
+                    <div class="panel-body">
+                        <div class="list-group trending-tags"><!-- Filled dynamically --></div>
+
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="col-lg-5">
+            	<div class="panel panel-default">
+                    <div class="panel-heading">
+                        Summary
+                    </div>
+                    <div class="panel-body">
+                    	{% if summary is defined %}
+							{{summary}}
+						{% endif %}
+                    </div>
+                </div>
+			</div>
+
+            <div class="col-lg-5">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        Tagging
+                    </div>
+                    <div id="query_tags" class="panel-body tag_style" style="overflow:auto;">
+                        {% if tags is not defined %}
+                            <span style="background-color:white;color:grey;font-size:90%;padding:0px;">Tags..</span>
+                        {% endif %}
+                        {% if tags is defined %}
+                            {% for tag in tags %}
+                                <span>{{tag}}</span>&nbsp;
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                </div>
+            </div>
+            
+      	</div>
+           	
     </div>
-    <!-- /#wrapper -->
+    <!-- /#page-wrapper -->
 
-    <!-- jQuery -->
-    <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
-      
-    <script src="{{ url_for('.static', filename='dist/js/jquery.simplePagination.js') }}"></script>
-    
-    <!-- Bootstrap Core JavaScript -->
-    <script src="{{ url_for('.static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+    <!-- Map -->
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel"> Density Map </h4>
+          </div>
+          <div class="modal-body">
+             <div id="map" style="width: 300px; height: 400px"></div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">Close</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Metis Menu Plugin JavaScript -->
-    <script src="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.js') }}"></script> 
-
-    <!-- Custom Theme JavaScript -->
-    <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
-	<script src="{{ url_for('.static', filename='dist/js/main.js') }}"></script>
- 
-</body>
-
-</html>
+{% endblock body %}

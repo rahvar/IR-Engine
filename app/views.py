@@ -12,10 +12,11 @@ import ast
 import re 
 import string
 import os
+import datetime
 from collections import Counter
 
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
-HOST = 'http://52.36.178.24:8983/solr/prj4/'
+HOST = 'http://35.165.140.166:8983/solr/prj4/'
 LANGUAGES = ['en','es','pt','fr']
 
 def lang_map(language):
@@ -25,14 +26,24 @@ def lang_map(language):
 @app.route('/')
 @app.route('/query',methods=['GET'])
 def query():
+
+    # Retrieve the parameter values from the url
     selected_language = request.args.get('lang-select')
     search_string = request.args.get('usrquery', '')
     tweet_language = request.args.get('lang','')
+
+    # DATE ARGS
+    from_date = request.args.get('datefrom')
+    to_date = request.args.get('dateto')
     
+    print(from_date)
+    print(to_date)
+
+    # Query Boosting
     boost_language = 'tweet_lang:%s^3' % selected_language
 
     # base case params
-    params = {'facet':'on', 'facet.field':'{!ex=dt}tweet_lang', 'rows':100,'defType':'edismax','bq':boost_language}
+    params = {'facet':'on', 'facet.field':['{!ex=dt}tweet_lang','tweet_date'], 'rows':100,'defType':'edismax','bq':boost_language}
 
     # if not query, display everything
     if search_string == '' or search_string == 'undefined':
@@ -52,6 +63,13 @@ def query():
 
     # extracting the tweet language
     lang_info = results.facets['facet_fields']['tweet_lang']
+
+    # extracting the tweet date
+    date_results = results.facets['facet_fields']['tweet_date']
+
+    """
+     ---------- LANGUAGE FACETING STARTS HERE ------
+    """
     filtered_lang_info = dict()
 
     for i in range(0,len(lang_info),2):
@@ -63,7 +81,32 @@ def query():
             item.append(search_string)
         item.append(lang_map(lang_info[i]))
         filtered_lang_info[lang_info[i]] = item
+    """
+     ---------- LANGUAGE FACETING ENDS HERE ------
+    """
     
+
+    """
+     ---------- DATE FACETING STARTS HERE ------
+    """
+    dates = list()
+    date_info = list()
+    #print(date_results)
+    for i in range(0,len(date_results),2):
+    
+        d = date_results[i][0:10]
+        date_object = datetime.datetime.strptime(d,'%Y-%m-%d')
+        dates.append(date_object)
+
+    lower_date = min(dates)
+    upper_date = max(dates)
+
+    date_info.append({'y':lower_date.year,'m':lower_date.month,'d':lower_date.day})
+    date_info.append({'y':upper_date.year,'m':upper_date.month,'d':upper_date.day})
+
+    """
+     ---------- DATE FACETING ENDS HERE ------
+    """
     tweet_text = ''
     count = 0
     image_count = 0
@@ -114,7 +157,7 @@ def query():
                 if alchemy_result['disambiguated'].get('dbpedia'):
                     dbpedia_link = alchemy_result['disambiguated'].get('dbpedia')
     
-#     Get Summary text
+    # Get Summary text
     summary_data = ''
     if dbpedia_link != '':
         subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
@@ -124,9 +167,13 @@ def query():
         summary_data = summary_data[list(summary_data.keys())[0]]['extract']
         summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
         print(summary_data)
+    print(date_info)
 
-    return render_template('index.html',lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list)
 
+    # Return the results and render it on the html page
+    return render_template('index.html',date_info=json.dumps(date_info),lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list)
+
+# To handle tags on html
 @app.route('/tags',methods=['POST'])
 def tags():
     solr = pysolr.Solr(HOST, timeout=10)
@@ -136,9 +183,10 @@ def tags():
 
     return jsonify(results.facets['facet_fields']['hashtags'])
 
+# Retrieve Similar pages 
 @app.route('/morelikethis')
 def morelikethis():
-    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    solr = pysolr.Solr('http://35.165.140.166:8983/solr/prj4/', timeout=10)
     
     tweet_id = request.args.get('similar')
 
@@ -151,6 +199,7 @@ def morelikethis():
     
     return render_template('index.html',tweets=similar)
 
+# Language detector
 @app.route('/getLang',methods=['GET'])
 def get_lang():
     data = json.dumps(
@@ -164,9 +213,11 @@ def get_lang():
     data_dict = ast.literal_eval(data)
     return jsonify(data_dict)
 
+
+# Maps 
 @app.route('/maps')
 def maps():
-    solr = pysolr.Solr('http://52.36.178.24:8983/solr/prj4/', timeout=10)
+    solr = pysolr.Solr('http://35.165.140.166:8983/solr/prj4/', timeout=10)
     params = {'rows': '1000000'} 
     results = solr.search("tweet_lat:*",**params)
     locations = list()
@@ -177,4 +228,4 @@ def maps():
         info['lng'] = r['tweet_long'][0]
         locations.append(info)
     
-    return render_template('maps.html',results=json.dumps(locations))
+    return render_template('index.html',results=json.dumps(locations))

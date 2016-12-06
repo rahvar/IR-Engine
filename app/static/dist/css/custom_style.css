@@ -1,6 +1,6 @@
 .tag_style span{
 	background-color:#5cb85c;
-//	display: inline;
+/*	display: inline;*/
 	color:white;
 	border-radius:.25em;
 	white-space:nowrap;
@@ -17,3 +17,21 @@
 	max-height:100px;
 	padding:5px;
 }
+
+#bootstrap-overrides a {
+	background-color: transparent;
+	text-decoration: none;
+	color: inherit;
+}
+
+#bootstrap-overrides #analytics .sidebar-link-item a:hover, a:focus{
+	background-color: transparent;
+	text-decoration: none;
+}
+
+#bootstrap-overrides #analytics .sidebar-link-item {
+	position: relative;
+	left: 10%;
+	/*top:15%;*/
+}
+
