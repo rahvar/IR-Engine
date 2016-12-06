@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="Go Search Team" content="Search Engine">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <!-- Bootstrap Core CSS -->
+
+    <link href="{{ url_for('.static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.css') }}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='dist/css/tweet_list.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='dist/css/simplePagination.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='vendor/jquery/iThing.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('.static', filename='vendor/jquery/jquery-ui.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('.static', filename='dist/css/transitions.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='dist/css/custom_style.css') }}" rel="stylesheet">
+<!-- 	<link href="{{ url_for('.static', filename='bubble/css/reset.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='bubble/css/style.css') }}" rel="stylesheet">
+ -->
+    <!-- Morris Charts CSS -->
+    <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
+    rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+
+
+    <!-- Application Icon -->
+    <link rel="icon" href="{{ url_for('.static', filename='dist/img/machine.png') }}">
+
+    <style type="text/css">
+        
+        .sidebar-list-items {
+            position: relative;
+            left:15%;
+            font-size: 1.1em;
+        }
+
+        .lang_logo_text {
+            display: inline-block;
+            font-size: 1.4em;
+            position: relative;
+            left:13%;
+        }
+
+        .fa-language,.fa-cubes {
+            display: inline-block;
+            position: relative;
+            left:5%; 
+            margin-top: 20%;
+        }
+
+        .navbar-static-top{
+            margin-top: 10px;
+        }
+
+/*        .top-search-bar {
+            margin-top: 1%;
+        }
+*
+
+    </style>
+
+    {% endblock %}
+</head>
+
+<body id="bootstrap-overrides">
+
+    {% block body %}
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+
+            <div class="navbar-header">
+                <i class="fa  fa-gears fa-3x"></i><a class="navbar-brand home-btn" href="/">Go Search</a> 
+            </div>
+            <!-- /.navbar-header -->
+
+            <!-- /.navbar-top-links -->      
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav">
+                    {% if lang_info%}
+                    <i class="fa fa-language fa-2x"></i><h4 class="lang_logo_text"> Languages </h4>
+                    <div class="nav lang-filter">
+                        <div id="langs">
+                        {% for lang, value in lang_info.items()|sort %}
+                        
+                            <div class="sidebar-list-items">
+                                <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{value[2]|e}}    {{value[0]|e}}
+                                <br/>
+                            </div>
+
+                        {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div id="dateSlider"></div>
+                    <div id="datefromserver" style="display: none;">{{date_info|safe}}</div>
+
+                    <i class="fa fa-cubes fa-2x"></i><h4 class="lang_logo_text"> Analytics </h4>
+                    <div class="nav lang-filter">
+                        <div id="analytics">          
+                            <div class="sidebar-list-items">
+                                <a class="sidebar-link-item analytics_btn" data-toggle="modal" data-target="#myModal"> Density Map </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+                                   <!-- End of Navigation Bar -->
+
+    </div>
+    <!-- /#wrapper -->
+    {% endblock body %}
+
+    {% block footer %}
+    <!-- jQuery -->
+    <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='vendor/jquery/jquery-ui.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='vendor/jquery/jQDateRangeSlider-min.js') }}"></script>
+    
+      
+    <script src="{{ url_for('.static', filename='dist/js/jquery.simplePagination.js') }}"></script>
+    
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('.static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{{ url_for('.static', filename='vendor/metisMenu/metisMenu.min.js') }}"></script> 
+
+    <!-- Custom Theme JavaScript -->
+    <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
+
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+<!--     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASqSSAcq1ORKuSfEV2ZNj-y63WoL2kwj0&callback=initMap"></script> -->
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyASqSSAcq1ORKuSfEV2ZNj-y63WoL2kwj0"></script>
+
+    <script src="{{ url_for('.static', filename='dist/js/main.js') }}"></script>
+    <script type="text/javascript">
+
+        // var dateInf = {{date_info|safe}}
+
+        // $("#dateSlider").dateRangeSlider({
+        //     bounds:{
+        //       min: new Date(dateInf[0].y,dateInf[0].m-1,dateInf[0].d),
+        //       max: new Date(dateInf[1].y,dateInf[1].m-1,dateInf[1].d)
+        //     }
+        // });
+
+    </script>
+    
+    {% endblock footer %}
+ 
+</body>
+
+</html>

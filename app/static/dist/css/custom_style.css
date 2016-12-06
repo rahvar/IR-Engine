@@ -2,10 +2,36 @@
 	background-color:#5cb85c;
 //	display: inline;
 	color:white;
-	border-radius:.25em;
+	border-radius:.35em;
 	white-space:nowrap;
-	line-height:1;
-	padding:.2em .6em .3em;
+	line-height:2;
+	padding:.2em .6em .3em .2em;
 	text-align:center;
-	font-size:75%;
+	font-size:80%;
 }
+
+.image-panel img{
+	min-width:100px;
+	min-height:100px;
+	max-width:100px;
+	max-height:100px;
+	padding:5px;
+}
+
+#bootstrap-overrides a {
+	background-color: transparent;
+	text-decoration: none;
+	color: inherit;
+}
+
+#bootstrap-overrides #analytics .sidebar-link-item a:hover, a:focus{
+	background-color: transparent;
+	text-decoration: none;
+}
+
+#bootstrap-overrides #analytics .sidebar-link-item {
+	position: relative;
+	left: 10%;
+	/*top:15%;*/
+}
+

@@ -6,125 +6,258 @@ from flask import jsonify
 # from settings import APP_STATIC
 import json
 import pysolr
-#import urllib2
 from urllib.request import urlopen
 from watson_developer_cloud import AlchemyLanguageV1
 import ast
 import re 
 import string
 import os
-# from SPARQLWrapper import SPARQLWrapper, JSON, XML, N3, RDF
+import datetime
 from collections import Counter
 
-alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
-HOST = 'http://52.36.178.24:8983/solr/prj4/'
-LANGUAGES = ['en','es','pt','fr']
+import requests
+from xml.etree import ElementTree
 
+alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
+HOST = 'http://35.165.140.166:8983/solr/prj4/'
+# LANGUAGES = ['en','es','pt','fr','ru']
+
+def lang_map(language):
+    language_map = {'en':'English','fr':'French','ru':'Russian','es':'Spanish','pt':'Portuguese'}
+    return language_map[language]
+
+@app.route('/')
 @app.route('/query',methods=['GET'])
 def query():
+
+    # Retrieve the parameter values from the url
     selected_language = request.args.get('lang-select')
-    search_string = request.args.get('usrquery', '*:*')
-    if search_string == '':
+    search_string = request.args.get('usrquery', '')
+    tweet_language = request.args.get('lang','')
+
+    # DATE ARGS
+    from_date = request.args.get('datefrom','')
+    to_date = request.args.get('dateto','')
+    
+    # print(from_date)
+    # print(to_date)
+
+    # Query Boosting
+    boost_language = 'tweet_lang:%s^3' % selected_language
+
+    # base case params
+    params = {'facet':'on', 'facet.field':['{!ex=dt}tweet_lang','tweet_date'], 'rows':100,'defType':'edismax','bq':boost_language}
+
+    # if not query, display everything
+    if search_string == '' or search_string == 'undefined':
         search_string = '*:*'
+
+    if tweet_language != '':
+        languages = tweet_language.split(' ')
+        # tweet_lang:en tweet_lang:es
+        fq_content = ''
+        for lang in languages:
+            fq_content += "tweet_lang:"+lang+' '
+        params['fq'] = '{!tag=dt}'+fq_content
+
+        if from_date and to_date:
+            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
+            params['fq'] += ' ' + date_range
+    else:
+        if from_date and to_date:
+            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
+            params['fq'] = date_range
+
     solr = pysolr.Solr(HOST, timeout=10)
+
+    print(params)
     
-    params = {'rows': '1000','defType':'edismax','qf':'text_en^2 _txt_'} 
-    results = solr.search(search_string,**params)
+    results = solr.search(search_string, **params)
+
+    # extracting the tweet language
+    lang_info = results.facets['facet_fields']['tweet_lang']
+
+    # extracting the tweet date
+    date_results = results.facets['facet_fields']['tweet_date']
+
+    """
+     ---------- LANGUAGE FACETING STARTS HERE ------
+    """
+    filtered_lang_info = dict()
+
+    for i in range(0,len(lang_info),2):
+        item = []
+        item.append(lang_info[i+1])
+        if search_string is None:
+            item.append("all")
+        else:
+            item.append(search_string)
+        item.append(lang_map(lang_info[i]))
+        filtered_lang_info[lang_info[i]] = item
+    """
+     ---------- LANGUAGE FACETING ENDS HERE ------
+    """
+
+    """
+     ---------- DATE FACETING STARTS HERE ------
+    """
+    dates = list()
+    date_info = list()
+    #print(date_results)
+    for i in range(0,len(date_results),2):
     
-    tweet_text = ''
+        d = date_results[i][0:10]
+        date_object = datetime.datetime.strptime(d,'%Y-%m-%d')
+        dates.append(date_object)
+
+    lower_date = min(dates)
+    upper_date = max(dates)
+
+    date_info.append({'y':lower_date.year,'m':lower_date.month,'d':lower_date.day})
+    date_info.append({'y':upper_date.year,'m':upper_date.month,'d':upper_date.day})
+
+    """
+     ---------- DATE FACETING ENDS HERE ------
+    """
+    
+    tweet_text = search_string
     count = 0
-    
-    escaped_text = re.escape(string.punctuation)
+
+    image_list = []
+    image_count = 0
+
+#     url = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&tags=trump,donald&api_key=6b32be403aae5c0a5765e7677385d4e0&media=photos&content_type=1&safe_search=1&tag_mode=AND&per_page=10&page=1&in_gallery=true'
+#     response = requests.get(url)
+#     photos = ElementTree.fromstring(response.content)
+#     
+#     for photo in photos.iter():
+#         farm = photo.get('farm')
+#         server = photo.get('server')
+#         photo_id = photo.get('id')
+#         secret = photo.get('secret')
+#         if farm and server and photo_id and secret:
+#             image_link = 'https://farm%s.staticflickr.com/%s/%s_%s.jpg' % (farm,server,photo_id,secret)
+#             image_list.append(image_link)
+#             image_count += 1
+#         if image_count > 4:
+#             break
     
     for tweet in results:
+        if count <= 3:
+            text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
+            tweet_text = '%s %s' % (tweet_text,text)
         count += 1
-        print(tweet)
-        text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
-#         text = re.sub(r'['+escaped_text+']', '',text)
-#         text = re.sub(r'^https?:\/\/.*[\r\n]*', '', text, flags=re.MULTILINE)
-        tweet_text = '%s %s' % (tweet_text,text)
         
-        if count > 3:
+        if tweet.get('media') and search_string != '*:*':
+            image_list.append(tweet['media'][0])
+            image_count += 1
+ 
+        if (image_count > 4 and count > 3) or (count > 100):
             break
-    tweet_text = re.sub(r'^https?:\/\/.*[\r\n]*', '', tweet_text, flags=re.MULTILINE)
+#         if count > 3:
+#             break;
+    
+    if search_string == '*:*':
+        image_list = []
+    
+    escaped_text = re.escape(string.punctuation)
+    tweet_string = ''
+    for tweet in results:
+        text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
+        tweet_string = '%s %s' % (tweet_string,text)
+        tweet_string = re.sub(r'http\S+', '', tweet_string)
+        tweet_string = re.sub(r'['+escaped_text+']', '',tweet_string)
+
+    tweet_text = re.sub(r'http\S+', '', tweet_text)
     tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
 
     alchemy_response = {}
     if search_string != '*:*':
-        alchemy_response = json.dumps(
-        alchemy_language.combined(
-          text=tweet_text,
-          extract='entities,keywords',
-          sentiment=1,
-          max_items=1),
-        indent=2)
-    
-    alchemy_response = ast.literal_eval(alchemy_response)
-    
+        try:
+            alchemy_response = json.dumps(
+            alchemy_language.combined(
+              text=tweet_text,
+              extract='entities,keywords',
+              sentiment=1,
+              max_items=1),
+            indent=2)
+        except Exception:
+            print ("Failed",Exception)
+            pass
+
     tags = []
     dbpedia_link = ''
-    for alchemy_result in alchemy_response.get('entities'):
-        if alchemy_result.get('disambiguated'):
-            if alchemy_result['disambiguated'].get('subType'):
-                for tag in alchemy_result['disambiguated']['subType']:
-                    tags.append(tag)
-            if alchemy_result['disambiguated'].get('dbpedia'):
-                dbpedia_link = alchemy_result['disambiguated'].get('dbpedia')
     
-#     Get Summary text
+    if alchemy_response:
+        alchemy_response = ast.literal_eval(alchemy_response)
+
+        for alchemy_result in alchemy_response.get('entities'):
+            if alchemy_result.get('disambiguated'):
+                if alchemy_result['disambiguated'].get('subType'):
+                    for tag in alchemy_result['disambiguated']['subType']:
+                        tags.append(tag)
+                if alchemy_result['disambiguated'].get('dbpedia'):
+                    dbpedia_link = alchemy_result['disambiguated'].get('dbpedia')
+    
+    # Get Summary text
     summary_data = ''
     if dbpedia_link != '':
         subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
-        summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
-        response = urlopen(summary_link)
-        summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
-        summary_data = summary_data[list(summary_data.keys())[0]]['extract']
-        summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
-        print(summary_data)
+        if selected_language != 'en':
+            summary_link = 'https://%s.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % (selected_language,subject)
+            response = urlopen(summary_link)
+            summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+            summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
+        elif selected_language == 'en' or not summary_data:
+            summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
+            response = urlopen(summary_link)
+            summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+            summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
+        if summary_data:
+            summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
 
-#     words_list = tweet_text.lower().replace('.','').replace('\n',' ').split(' ')
-#     counter = Counter(words_list)
-#     fopen = open('app/static/bubble/data/new_file.csv','w')
-#     fopen.write("\"name\",\"word\",\"count\"")
-#     fopen.write('\n')
-#     for i in counter:
-#         if counter[i] > 1 and i not in ['','i','the','to','a','to','him','of','el']:
-#             str1 = '\"%s\",\"%s\",%s' % (i,i,counter[i])
-#     #         fopen.write("\""+i+"\","+"\""+i+"\""+counter[i])
-#             fopen.write(str1)
-#             fopen.write('\n')
-        
-#     print("alchemy_response",alchemy_response)
-#     alchemy_dict = ast.literal_eval(alchemy_response)
-    
-    return render_template('index.html',tweets=results,tags=tags,summary=summary_data)
+    '''
+    words_list = tweet_string.lower().replace('.','').replace('\n',' ').split(' ')
+    counter = Counter(words_list)
+    fopen = open('app/static/bubble/data/new_file.csv','w')
+    fopen.write("\"name\",\"word\",\"count\"")
+    fopen.write('\n')
+    for i in counter:
+        if counter[i] > 1 and i not in ['','i','the','to','a','to','him','of','el']:
+            str1 = '\"%s\",\"%s\",%s' % (i,i,counter[i])
+            fopen.write(str1)
+            fopen.write('\n')
+    '''
+    # Return the results and render it on the html page
+    return render_template('index.html',date_info=json.dumps(date_info),lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list)
 
+# To handle tags on html
 @app.route('/tags',methods=['POST'])
 def tags():
     solr = pysolr.Solr(HOST, timeout=10)
     # results = solr.search("*:*")
     params = {'rows': '0', "facet":"on", "facet.field":"hashtags"} 
     results = solr.search("*:*", **params)
-    
+
     return jsonify(results.facets['facet_fields']['hashtags'])
 
-@app.route('/')
-@app.route('/index')
-def index():
-    # response = urlopen('https://api.twitter.com/1.1/statuses/oembed.json?id=801219908910469120')
-    # #data = json.loads('https://publish.twitter.com/oembed.json?url=https%3A%2F%2Ftwitter.com%2Fi%2Fmoments%2F650667182356082688')
-    # data = json.loads(response.read().decode('utf8'))
-    # response = urlopen('https://api.twitter.com/1.1/statuses/oembed.json?id=801086836764385280')
-    # data2 = json.loads(response.read().decode('utf8'))
-    # print data['html']
-
+# Retrieve Similar pages 
+@app.route('/morelikethis')
+def morelikethis():
     solr = pysolr.Solr(HOST, timeout=10)
-    # results = solr.search("*:*")
-    params = {'rows': '5'} 
-    results = solr.search("*:*", **params)
     
-    return render_template('index.html',tweets=results)
+    tweet_id = request.args.get('similar')
 
+    params = {'mlt':'true','mlt.mintf':'7','mlt.fl':'_text_','mlt.mindf':'1','rows':100}   
+
+    similar = solr.more_like_this('id:'+str(tweet_id), mltfl='_text_', **params)
+    
+    if len(similar)==0:
+        similar = solr.search('id:'+tweet_id)
+    
+    return render_template('index.html',tweets=similar)
+
+# Language detector
 @app.route('/getLang',methods=['GET'])
 def get_lang():
     data = json.dumps(
@@ -135,12 +268,22 @@ def get_lang():
       max_items=1),
     indent=2)
     
-    """
-    data =  alchemy_language.combined(
-        text='Donald Trump invites Hungarian PM #Orban to Washington:',
-        extract='entities,keywords',
-        sentiment=1,
-        max_items=1)
-    """
     data_dict = ast.literal_eval(data)
     return jsonify(data_dict)
+
+
+# Maps 
+@app.route('/maps')
+def maps():
+    solr = pysolr.Solr(HOST, timeout=10)
+    params = {'rows': '1000000'} 
+    results = solr.search("tweet_lat:*",**params)
+    locations = list()
+    #info = dict()
+    for r in results:
+        info = dict()
+        info['lat'] = r['tweet_lat'][0]
+        info['lng'] = r['tweet_long'][0]
+        locations.append(info)
+    
+    return render_template('maps.html',results=json.dumps(locations))

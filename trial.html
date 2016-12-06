@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>transp</title>
+    <style>
+        div{
+            position:relative;
+        }
+        input, span{
+            top:0;
+            position:absolute;
+            width:120px;
+        }
+        span{
+            top:2px;
+            left:2px;
+            z-index:1;
+            overflow:hidden;
+        }
+        input{
+            background:transparent;
+            z-index:2;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <input onkeyup="bold3(this)" />
+    <span id="back"></span>
+</div>
+<script>
+function bold3(inp){
+    inp.style.color = 'transparent';
+    var span = document.getElementById('back');
+    span.innerHTML = 
+        '<b>' + 
+        inp.value.substr(0, 3) + 
+        '</b>' + 
+        inp.value.substr(3);
+    span.style="background-color:'yellow'";
+}
+</script>
+</body>
+</html>
