@@ -17,7 +17,7 @@ from collections import Counter
 
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
 HOST = 'http://35.165.140.166:8983/solr/prj4/'
-LANGUAGES = ['en','es','pt','fr']
+# LANGUAGES = ['en','es','pt','fr','ru']
 
 def lang_map(language):
     language_map = {'en':'English','fr':'French','ru':'Russian','es':'Spanish','pt':'Portuguese'}
@@ -36,9 +36,6 @@ def query():
     from_date = request.args.get('datefrom')
     to_date = request.args.get('dateto')
     
-    print(from_date)
-    print(to_date)
-
     # Query Boosting
     boost_language = 'tweet_lang:%s^3' % selected_language
 
@@ -107,26 +104,41 @@ def query():
     """
      ---------- DATE FACETING ENDS HERE ------
     """
-    tweet_text = ''
-    count = 0
-    image_count = 0
-    image_list = []
     
-    escaped_text = re.escape(string.punctuation)
+    tweet_text = search_string
+    count = 0
+
+    image_list = []
+    image_count = 0
+
+    
     for tweet in results:
         if count <= 3:
             text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
             tweet_text = '%s %s' % (tweet_text,text)
         count += 1
         
-        if tweet.get('media'):
-            print (tweet['media'])
+        if tweet.get('media') and search_string != '*:*':
             image_list.append(tweet['media'][0])
             image_count += 1
-
-        if image_count > 3 and count > 3:
+ 
+        if (image_count > 4 and count > 3) or (count > 30):
             break
-    tweet_text = tweet_text = re.sub(r'http\S+', '', tweet_text)
+#         if count > 3:
+#             break;
+    
+    if search_string == '*:*':
+        image_list = []
+    
+    escaped_text = re.escape(string.punctuation)
+    tweet_string = ''
+    for tweet in results:
+        text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
+        tweet_string = '%s %s' % (tweet_string,text)
+        tweet_string = re.sub(r'http\S+', '', tweet_string)
+        tweet_string = re.sub(r'['+escaped_text+']', '',tweet_string)
+
+    tweet_text = re.sub(r'http\S+', '', tweet_text)
     tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
 
     alchemy_response = {}
@@ -161,13 +173,19 @@ def query():
     summary_data = ''
     if dbpedia_link != '':
         subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
-        summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
-        response = urlopen(summary_link)
-        summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
-        summary_data = summary_data[list(summary_data.keys())[0]]['extract']
-        summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
-        print(summary_data)
-    print(date_info)
+        if selected_language != 'en':
+            summary_link = 'https://%s.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % (selected_language,subject)
+            response = urlopen(summary_link)
+            summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+            summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
+        elif selected_language == 'en' or not summary_data:
+            summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
+            response = urlopen(summary_link)
+            summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+            summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
+        if summary_data:
+            summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
+
 
 
     # Return the results and render it on the html page

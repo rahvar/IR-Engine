@@ -1,13 +1,13 @@
 .tag_style span{
 	background-color:#5cb85c;
-/*	display: inline;*/
+//	display: inline;
 	color:white;
-	border-radius:.25em;
+	border-radius:.35em;
 	white-space:nowrap;
-	line-height:1;
-	padding:.2em .6em .3em;
+	line-height:2;
+	padding:.2em .6em .3em .2em;
 	text-align:center;
-	font-size:75%;
+	font-size:80%;
 }
 
 .image-panel img{
