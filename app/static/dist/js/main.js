@@ -11,7 +11,6 @@ $(function(){
         for(var prop in checkboxvalues) {
             checkboxvalues[prop] = false;
         }
-        console.log(checkboxvalues);
         sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
     }
 
@@ -71,7 +70,6 @@ $(function(){
     })
     .done(function(data) {
         console.log("success");
-        //console.log(data)
         for(var i = 0; i < data.length; i+=2) {
             if(data[i+1] < 100)
                 break
@@ -99,7 +97,6 @@ $(function(){
     var perPage = $('.paginate');
     // total num of tweets 
     var totNumTweets = perPage.length;
-    //console.log("Total num tweets: "+totNumTweets);
     // num of tweets at a time 
     var perPageTweets = 5;
     // When the document loads hide everything else besides the first 5
