@@ -16,7 +16,8 @@ import datetime
 from collections import Counter
 
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
-HOST = 'http://35.165.140.166:8983/solr/prj4/'
+# HOST = 'http://35.165.140.166:8983/solr/prj4/'
+HOST = 'http://localhost:8983/solr/prj4/'
 # LANGUAGES = ['en','es','pt','fr','ru']
 
 def lang_map(language):
@@ -33,8 +34,8 @@ def query():
     tweet_language = request.args.get('lang','')
 
     # DATE ARGS
-    from_date = request.args.get('datefrom')
-    to_date = request.args.get('dateto')
+    from_date = request.args.get('datefrom','')
+    to_date = request.args.get('dateto','')
     
     # Query Boosting
     boost_language = 'tweet_lang:%s^3' % selected_language
@@ -53,6 +54,14 @@ def query():
         for lang in languages:
             fq_content += "tweet_lang:"+lang+' '
         params['fq'] = '{!tag=dt}'+fq_content
+
+        if from_date and to_date:
+            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
+            params['fq'] += ' ' + date_range
+    else:
+        if from_date and to_date:
+            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
+            params['fq'] = date_range
 
     solr = pysolr.Solr(HOST, timeout=10)
     
@@ -81,7 +90,6 @@ def query():
     """
      ---------- LANGUAGE FACETING ENDS HERE ------
     """
-    
 
     """
      ---------- DATE FACETING STARTS HERE ------
@@ -122,7 +130,7 @@ def query():
             image_list.append(tweet['media'][0])
             image_count += 1
  
-        if (image_count > 4 and count > 3) or (count > 30):
+        if (image_count > 4 and count > 3) or (count > 100):
             break
 #         if count > 3:
 #             break;
@@ -173,12 +181,12 @@ def query():
     summary_data = ''
     if dbpedia_link != '':
         subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
-        if selected_language != 'en':
+        if selected_language and selected_language != 'en':
             summary_link = 'https://%s.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % (selected_language,subject)
             response = urlopen(summary_link)
             summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
             summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
-        elif selected_language == 'en' or not summary_data:
+        elif selected_language == 'en' or not summary_data or not selected_language:
             summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
             response = urlopen(summary_link)
             summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
@@ -204,7 +212,7 @@ def tags():
 # Retrieve Similar pages 
 @app.route('/morelikethis')
 def morelikethis():
-    solr = pysolr.Solr('http://35.165.140.166:8983/solr/prj4/', timeout=10)
+    solr = pysolr.Solr(HOST, timeout=10)
     
     tweet_id = request.args.get('similar')
 
@@ -235,7 +243,7 @@ def get_lang():
 # Maps 
 @app.route('/maps')
 def maps():
-    solr = pysolr.Solr('http://35.165.140.166:8983/solr/prj4/', timeout=10)
+    solr = pysolr.Solr(HOST, timeout=10)
     params = {'rows': '1000000'} 
     results = solr.search("tweet_lat:*",**params)
     locations = list()
@@ -246,4 +254,4 @@ def maps():
         info['lng'] = r['tweet_long'][0]
         locations.append(info)
     
-    return render_template('index.html',results=json.dumps(locations))
+    return render_template('maps.html',results=json.dumps(locations))

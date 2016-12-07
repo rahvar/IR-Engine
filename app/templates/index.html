@@ -116,19 +116,21 @@
 
                 </div>
             </div>
-            {% if summary is defined and summary%}
-            <div class="col-lg-5">
-            	<div class="panel panel-default">
-                    <div class="panel-heading">
-                        Summary
-                    </div>
-                    <div class="panel-body">
-							{{summary}}
-						
-                    </div>
-                </div>
-			</div>
+            
+            {% if summary is defined and summary %}
+	            <div class="col-lg-5">
+	            	<div class="panel panel-default">
+	                    <div class="panel-heading">
+	                        Summary
+	                    </div>
+	                    <div class="panel-body">
+								{{summary}}
+							
+	                    </div>
+	                </div>
+				</div>
 			{% endif %}
+			
             <div class="col-lg-5">
                 <div class="panel panel-default">
                     <div class="panel-heading">
