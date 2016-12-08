@@ -229,6 +229,8 @@ def morelikethis():
     
     if len(similar)==0:
         similar = solr.search('id:'+tweet_id)
+
+    print(similar.hits)
     
     return render_template('index.html',tweets=similar)
 

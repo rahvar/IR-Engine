@@ -9,16 +9,16 @@
             margin-top: 1%;
         }
 
-/*        #map{
-          height: 300px;
-          width: 600px;  
-        }*/
-
         #map {
             position: relative;
             left: 15%;  
             height: 300px;
             width: 800px;
+        }
+
+        #numResults {
+          position: relative;
+          left: 54%;
         }
 
     </style>
@@ -50,10 +50,16 @@
 
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <i class="fa fa-twitter"></i>  Tweets for the query
+
+                        <i class="fa fa-twitter"></i>  Tweets for the query 
+                        {% if results_count %} 
+                        <span id="numResults"> {{results_count}} results returned </span>
+                        {% else %}
+                        <span id="numResults"> 0 results returned </span>
+                        {% endif %}
                     </div>
 
-                    <div id="numResults">{{results_count}}</div>
+                    
                     <div class="panel-body tweet-list" >
                     <div id="page-nav"></div>
                        <div class="qa-message-list" id="wallmessages" style="overflow:scroll;height:500px;">    

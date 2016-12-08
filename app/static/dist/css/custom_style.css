@@ -42,6 +42,16 @@
 	margin:0 auto;
 }
 
+#bootstrap-overrides #analytics .sidebar-list-items {
+	position: relative;
+	left: 13%;
+	margin-top: 2%;
+}
+
+#bootstrap-overrides #analytics .sidebar-list-items a:hover{
+	cursor: pointer;
+}
+
 .ui-rangeSlider-bar {
 	background: #337ab7;
 }
@@ -62,4 +72,8 @@
 	margin-bottom: 20px;
 	margin-top: 10px;
 	padding-bottom: 5px;
+}
+
+#bootstrap-overrides .visualize_btn {
+	position: 
 }

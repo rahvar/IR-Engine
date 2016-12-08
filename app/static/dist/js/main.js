@@ -1,5 +1,37 @@
 $(function(){    
 
+    /////////////////////////////////// TAGS /////////////////////////////////////////
+
+    // To populate tags from server
+    $.ajax({
+        url: "/tags",
+        method: "POST",     
+        dataType: "json"
+    })
+    .done(function(data) {
+        console.log("success");
+        for(var i = 0; i < data.length; i+=2) {
+            if(data[i+1] < 100)
+                break
+            $('.trending-tags').append(
+                            "<a href=\""
+                            + "/query?usrquery=" + data[i] + "\""
+                            + "class=\"list-group-item tag-item\" data-qtext=\""+ data[i] +"\">"
+                            + "<i class=\"fa fa-hashtag fa-fw\"></i>"
+                            +  data[i]
+                            + "<span class=\"pull-right text-muted small\"><em>" 
+                            +  data[i+1]
+                            + "</em> </span> </a>")
+        }
+
+    })
+    .fail(function() {
+        console.log("error");
+    })
+    .always(function() {
+        console.log("complete");
+    }); 
+
     //////////////////////////// RESETS //////////////////////////////////////
 
     // All page resets
@@ -72,45 +104,6 @@ $(function(){
         sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
     }
 
-    // Resetting the date slider info
-    function setDateSlider() {
-
-        // Date Slider
-        var dateInf = JSON.parse($('#datefromserver').text());
-
-        var minDate = new Date(dateInf[0].y,dateInf[0].m-1,dateInf[0].d);
-        var maxDate = new Date(dateInf[1].y,dateInf[1].m-1,dateInf[1].d);
-
-        // set min and max date
-        $("#dateSlider").dateRangeSlider({
-            bounds:{
-              min: minDate,
-              max: maxDate
-            },
-            formatter:function(val){
-            var days = val.getDate(),
-                month = val.getMonth() + 1,
-                year = val.getFullYear();
-            return month + "-" + days + "-" + year%100;
-          }
-        });
-
-        // If there was a search previously
-        if(sessionStorage.getItem('dateSilderInfo') !== null) {
-
-            var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
-        
-            console.log(dateSilderInfo)
-
-            $("#dateSlider").dateRangeSlider("values", 
-                new Date(dateSilderInfo['minDate']), 
-                new Date(dateSilderInfo['maxDate']));               
-        }
-        else {
-            // Set the date range slider 
-            $("#dateSlider").dateRangeSlider("values",minDate,maxDate);
-        }         
-    }
 
     function dateFormat(minDate,maxDate) {
 
@@ -168,37 +161,7 @@ $(function(){
         window.location.assign(uri)
     });
 
-    /////////////////////////////////// TAGS /////////////////////////////////////////
-
-    // To populate tags from server
-    $.ajax({
-        url: "/tags",
-        method: "POST",
-        dataType: "json"
-    })
-    .done(function(data) {
-        console.log("success");
-        for(var i = 0; i < data.length; i+=2) {
-            if(data[i+1] < 100)
-                break
-            $('.trending-tags').append(
-                            "<a href=\""
-                            + "/query?usrquery=" + data[i] + "\""
-                            + "class=\"list-group-item tag-item\" data-qtext=\""+ data[i] +"\">"
-                            + "<i class=\"fa fa-hashtag fa-fw\"></i>"
-                            +  data[i]
-                            + "<span class=\"pull-right text-muted small\"><em>" 
-                            +  data[i+1]
-                            + "</em> </span> </a>")
-        }
-
-    })
-    .fail(function() {
-        console.log("error");
-    })
-    .always(function() {
-        console.log("complete");
-    });      
+     
 
     /////////////////////////////////// PAGINATION /////////////////////////////////////////
 
@@ -313,7 +276,54 @@ $(function(){
 		}
 	});
 
-    /////////////////////////////////// MAPS ///////////////////////////////////////
+    /////////////////////////////////// Slider ///////////////////////////////////////
+
+        // Resetting the date slider info
+    function setDateSlider() {
+
+        var text = $('#datefromserver').text();
+        console.log("Text: " + text.length)
+
+        if(text != null || text.length != 0) {
+            console.log("Inside")
+            // Date Slider
+            var dateInf = JSON.parse(text);
+
+            var minDate = new Date(dateInf[0].y,dateInf[0].m-1,dateInf[0].d);
+            var maxDate = new Date(dateInf[1].y,dateInf[1].m-1,dateInf[1].d);
+
+            // set min and max date
+            $("#dateSlider").dateRangeSlider({
+                bounds:{
+                  min: minDate,
+                  max: maxDate
+                },
+                formatter:function(val){
+                var days = val.getDate(),
+                    month = val.getMonth() + 1,
+                    year = val.getFullYear();
+                return month + "-" + days + "-" + year%100;
+              }
+            });
+
+            // If there was a search previously
+            if(sessionStorage.getItem('dateSilderInfo') !== null) {
+
+                var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+            
+                console.log(dateSilderInfo)
+
+                $("#dateSlider").dateRangeSlider("values", 
+                    new Date(dateSilderInfo['minDate']), 
+                    new Date(dateSilderInfo['maxDate']));               
+            }
+            else {
+                // Set the date range slider 
+                $("#dateSlider").dateRangeSlider("values",minDate,maxDate);
+            }  
+
+        }
+    }
 
 
 });
