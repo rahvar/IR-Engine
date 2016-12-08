@@ -48,7 +48,10 @@ def query():
     # if not query, display everything
     if search_string == '' or search_string == 'undefined':
         search_string = '*:*'
+    
+    fq_list = []       
 
+    # Language filter exists
     if tweet_language != '':
         languages = tweet_language.split(' ')
         # tweet_lang:en tweet_lang:es
@@ -57,10 +60,13 @@ def query():
             fq_content += "tweet_lang:"+lang+' '
         params['fq'] = '{!tag=dt}'+fq_content
 
+        # Date filter exists
         if from_date and to_date:
-            date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
-            params['fq'] += ' ' + date_range
+            fq_list.append('{!tag=dt}'+fq_content)
+            fq_list.append('tweet_date:['+from_date+' TO ' + to_date+ ']')
+            params['fq'] = fq_list
     else:
+        # Date filter exists
         if from_date and to_date:
             date_range = 'tweet_date:['+from_date+' TO ' + to_date+ ']'
             params['fq'] = date_range
@@ -238,4 +244,4 @@ def maps():
         info['lng'] = r['tweet_long'][0]
         locations.append(info)
     
-    return render_template('index.html',results=json.dumps(locations))
+    return render_template('maps.html',results=json.dumps(locations))
