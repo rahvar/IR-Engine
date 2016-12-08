@@ -1,9 +1,30 @@
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
+    <meta name="description" content="Twitter Search Engine">
+    <meta name="Go Search Team" content="Search Engine">
+
     <title>Density Map</title>
+
+    <!-- Bootstrap Core CSS -->
+
+    <link href="{{ url_for('.static', filename='vendor/bootstrap/css/bootstrap.css') }}" rel="stylesheet">
+
+    <!-- Custom Styling -->
+    <link href="{{ url_for('.static', filename='dist/css/sb-admin-2.css') }}" rel="stylesheet">
+
+    <link href="{{ url_for('.static', filename='dist/css/custom_style.css') }}" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="{{ url_for('.static', filename='vendor/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!-- Application Icon -->
+    <link rel="icon" href="{{ url_for('.static', filename='dist/img/machine.png') }}">
+
+
     <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -13,14 +34,147 @@
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
+        width: 100%;
         margin: 0;
         padding: 0;
       }
+
+      .sidebar-list-items {
+          position: relative;
+          left:15%;
+          font-size: 1.1em;
+      }
+
+      .lang_logo_text {
+          display: inline-block;
+          font-size: 1.4em;
+          position: relative;
+          left:13%;
+      }
+
+      .fa-language,.fa-cubes {
+          display: inline-block;
+          position: relative;
+          left:5%; 
+          margin-top: 20%;
+      }
+
+      .navbar-static-top{
+          
+         /* z-index: 0;*/
+      }
+
+     .top-search-bar {
+          margin-top: 0;
+          position: absolute;
+          left: 18%;
+          width: 88%;
+      }
+
     </style>
   </head>
-  <body>
-    <div id="map"></div>
+
+<body id="bootstrap-overrides">
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
+
+            <div class="navbar-header">
+                <i class="fa  fa-gears fa-3x"></i><a class="navbar-brand home-btn" href="/">Go Search</a> 
+            </div>
+
+            <!-- <div class="row"> -->
+            <div class="col-lg-12 top-search-bar">
+            <form class="form-inline" action="/query" method="get" id="user-search">
+                <div class="input-group custom-search-form col-lg-12">
+                    <select class="form-control lang-select" style="width:15%" 
+                            name="lang-select" title="Results will be given preference in this language">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="pt">Português</option>
+                        <option value="fr">Français</option>
+                    </select>
+                    <input style="float:left;width:85%" type="text" class="form-control search-bar" 
+                            placeholder="Search..." name="usrquery">
+                    <span class="input-group-btn" style="vertical-align:top;">
+                        <button id="main-search-btn" class="btn btn-default" type="submit">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </form>
+            </div>
+                <!-- /.col-lg-12 -->
+            <!-- </div> -->
+            <!-- /.navbar-header -->
+
+            <!-- /.navbar-top-links -->      
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav">
+                    {% if lang_info%}
+                    <i class="fa fa-language fa-2x"></i><h4 class="lang_logo_text"> Languages </h4>
+                    <div class="nav lang-filter">
+                        <div id="langs">
+                        {% for lang, value in lang_info.items()|sort %}
+                        
+                            <div class="sidebar-list-items">
+                                <input type="checkbox" name="{{value[1]}}" value="{{lang}}" id="{{lang}}" class="lang-select"> {{value[2]|e}}    {{value[0]|e}}
+                                <br/>
+                            </div>
+
+                        {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if date_info%}
+                    <div id="dateSlider" class="active"></div>
+                    <div id="datefromserver" style="display: none;">{{date_info|safe}}</div>
+                    {% endif %}
+
+                    <i class="fa fa-cubes fa-2x"></i><h4 class="lang_logo_text"> Analytics </h4>
+                    <div class="nav lang-filter">
+                        <div id="analytics">          
+                            <div class="sidebar-list-items">
+                                <a href="/maps" class="sidebar-link-item analytics_btn"> Density Map </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+                                   <!-- End of Navigation Bar -->
+
+    </div>
+
+    <div style="height:80%; width:70%;position:relative;left:17%;top:6%;">
+      <div id="map" style="position: relative;overflow: hidden;height:100%; width:100%;">
+      </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="{{ url_for('.static', filename='vendor/jquery/jquery.min.js') }}"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{{ url_for('.static', filename='vendor/bootstrap/js/bootstrap.min.js') }}"></script>
+
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASqSSAcq1ORKuSfEV2ZNj-y63WoL2kwj0">
+    </script>
+
+    <!-- Custom -->
     <script>
+
+      // $(function(){
+        
+      //   google.maps.event.trigger(map, "resize");
+
+      // });
 
       function initMap() {
 
@@ -47,17 +201,18 @@
         var markerCluster = new MarkerClusterer(map, markers,
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
       }
+
+      google.maps.event.addDomListener(window, 'load', initMap);
       /*
       var locations = [
         {lat: -31.563910, lng: 147.154312},
       ]*/
       var locations = {{results|safe}}
       console.log(locations[0])
+
     </script>
-    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASqSSAcq1ORKuSfEV2ZNj-y63WoL2kwj0&callback=initMap">
-    </script>
-  </body>
+
+
+</body>
 </html>
+
