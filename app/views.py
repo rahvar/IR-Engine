@@ -72,6 +72,7 @@ def query():
     solr = pysolr.Solr(HOST, timeout=10)
     
     results = solr.search(search_string, **params)
+    results_count = results.hits
 
     # extracting the tweet language
     lang_info = results.facets['facet_fields']['tweet_lang']
@@ -203,7 +204,7 @@ def query():
             summary_data = (summary_data[:250] + '..') if len(summary_data) > 75 else summary_data
 
     # Return the results and render it on the html page
-    return render_template('index.html',date_info=json.dumps(date_info),lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list)
+    return render_template('index.html',date_info=json.dumps(date_info),lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list,results_count=results_count)
 
 # To handle tags on html
 @app.route('/tags',methods=['POST'])
@@ -274,15 +275,7 @@ def get_lang():
 # Maps 
 @app.route('/maps')
 def maps():
-    solr = pysolr.Solr(HOST, timeout=10)
-    params = {'rows': '1000000'} 
-    results = solr.search("tweet_lat:*",**params)
-    locations = list()
-    #info = dict()
-    for r in results:
-        info = dict()
-        info['lat'] = r['tweet_lat'][0]
-        info['lng'] = r['tweet_long'][0]
-        locations.append(info)
-    
-    return render_template('maps.html',results=json.dumps(locations))
+    with open(os.getcwd()+'/app/map_data/locs.json') as locs:
+        loc_data = json.load(locs)
+ 
+    return render_template('maps.html',results=loc_data)
