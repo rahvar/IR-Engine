@@ -32,7 +32,7 @@
         <div class="row" id="main-content">
             <div class="col-lg-7">
 
-                {% if image_list is defined %}
+                {% if image_list is defined and image_list %}
                    <div class="panel panel-primary">
                        <div class="panel-heading">
                            Images
@@ -86,25 +86,24 @@
                     <!-- /.panel-heading -->
                     <div class="panel-body">
                         <div class="list-group trending-tags"><!-- Filled dynamically --></div>
-
                     </div>
-
                 </div>
             </div>
             
-            <div class="col-lg-5">
-            	<div class="panel panel-default">
-                    <div class="panel-heading">
-                        Summary
-                    </div>
-                    <div class="panel-body">
-                    	{% if summary is defined %}
-							{{summary}}
-						{% endif %}
-                    </div>
-                </div>
-			</div>
-
+            {% if summary is defined and summary %}
+	            <div class="col-lg-5">
+	            	<div class="panel panel-default">
+	                    <div class="panel-heading">
+	                        Summary
+	                    </div>
+	                    <div class="panel-body">
+								{{summary}}
+							
+	                    </div>
+	                </div>
+				</div>
+			{% endif %}
+			
             <div class="col-lg-5">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -125,7 +124,6 @@
             </div>
             
       	</div>
-           	
     </div>
     <!-- /#page-wrapper -->
 
@@ -145,5 +143,27 @@
         </div>
       </div>
     </div> -->
+
+    <!-- Bubble Cloud -->
+    <div class="modal fade" id="myModal1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+          <div class="modal-header">
+            <h4 class="modal-title" id="myModalLabel"> Bubble Cloud </h4>
+          </div>
+          <div class="modal-body">
+             <div id="container" class="container">
+			  <div id="main" role="main">
+			    <div id="vis"></div>
+			    <div id="status"></div>
+			  </div>
+			</div>
+          </div>
+          <div class="modal-footer">
+            <a class="btn btn-default" data-dismiss="modal">Close</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
 {% endblock body %}

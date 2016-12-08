@@ -289,6 +289,7 @@ $(function(){
     		return;
     	
         var query_text = $('.search-bar').val();
+        var lang_select = $('.lang-select').val();
         if (query_text.split(' ').length > 2)
     	{
             $.ajax(
@@ -299,16 +300,11 @@ $(function(){
                 data: {query:query_text},
             })
             .done(function(data)
-    		{
-            	var lang_map = {'english':'en','spanish':'es','portuguese':'pt','french':'fr'}
-            	var languages = ['english','spanish','portuguese','french'];
-            	//console.log(data);
-            	if (languages.indexOf(data.language)<0)
-        		{
-            		data.language='english';
-            		//console.log(lang_map[data.language]);
-        		}
-        		$('.lang-select').val(lang_map[data.language]);
+    		{	
+            	response_language = data.language;
+            	console.log(data);
+            	$('.lang-select').val(response_language);
+    			
             })
             .fail(function() 
     		{

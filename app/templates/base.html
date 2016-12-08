@@ -26,7 +26,8 @@
     <link href="{{ url_for('.static', filename='vendor/jquery/jquery-ui.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('.static', filename='dist/css/transitions.css') }}" rel="stylesheet">
     <link href="{{ url_for('.static', filename='dist/css/custom_style.css') }}" rel="stylesheet">
-    
+	<link href="{{ url_for('.static', filename='bubble/css/reset.css') }}" rel="stylesheet">
+    <link href="{{ url_for('.static', filename='bubble/css/style.css') }}" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="{{ url_for('.static', filename='vendor/morrisjs/morris.css') }}"
@@ -143,10 +144,12 @@
                         <div id="analytics">          
                             <div class="sidebar-list-items">
                                 <a href="/maps" class="sidebar-link-item analytics_btn"> Density Map </a>
+                                <br/>
+                                <a class="sidebar-link-item analytics_btn" data-toggle="modal" 
+                                	data-target="#myModal1"> Visualize </a>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
             <!-- /.navbar-static-side -->
@@ -176,7 +179,11 @@
     <script src="{{ url_for('.static', filename='dist/js/sb-admin-2.js') }}"></script>
 
     <script src="{{ url_for('.static', filename='dist/js/main.js') }}"></script>
-    
+    <script src="{{ url_for('.static', filename='bubble/js/libs/coffee-script.js') }}"></script>
+    <script src="{{ url_for('.static', filename='bubble/js/libs/d3.min.js') }}"></script>
+    <script src="{{ url_for('.static', filename='bubble/js/vis.js') }}"></script>
+	<script type="text/javascript">
+	</script>
     {% endblock footer %}
  
 </body>

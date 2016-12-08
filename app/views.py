@@ -17,7 +17,8 @@ from collections import Counter
 
 alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
 HOST = 'http://35.165.140.166:8983/solr/prj4/'
-LANGUAGES = ['en','es','pt','fr']
+# HOST = 'http://localhost:8983/solr/prj4/'
+LANGUAGES = ['en','es','pt','fr','ru']
 
 def lang_map(language):
     language_map = {'en':'English','fr':'French','ru':'Russian','es':'Spanish','pt':'Portuguese'}
@@ -36,9 +37,6 @@ def query():
     from_date = request.args.get('datefrom','')
     to_date = request.args.get('dateto','')
     
-    # print(from_date)
-    # print(to_date)
-
     # Query Boosting
     boost_language = 'tweet_lang:%s^3' % selected_language
 
@@ -72,8 +70,6 @@ def query():
             params['fq'] = date_range
 
     solr = pysolr.Solr(HOST, timeout=10)
-
-    print(params)
     
     results = solr.search(search_string, **params)
 
@@ -122,34 +118,51 @@ def query():
     """
      ---------- DATE FACETING ENDS HERE ------
     """
-    tweet_text = ''
-    count = 0
-    image_count = 0
-    image_list = []
     
-    escaped_text = re.escape(string.punctuation)
+    tweet_text = search_string
+    count = 0
+
+    image_list = []
+    image_count = 0
+    
     for tweet in results:
         if count <= 3:
             text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
             tweet_text = '%s %s' % (tweet_text,text)
         count += 1
         
-        if tweet.get('media'):
-            # print (tweet['media'])
+        if tweet.get('media') and search_string != '*:*':
             image_list.append(tweet['media'][0])
             image_count += 1
 
-        if image_count > 3 and count > 3:
+        if (image_count > 4 and count > 3) or (count > 100):
             break
-    tweet_text = tweet_text = re.sub(r'http\S+', '', tweet_text)
+#         if count > 100:
+#             break;
+    
+    if search_string == '*:*':
+        image_list = []
+    
+    escaped_text = re.escape(string.punctuation)
+    tweet_string = ''
+    for tweet in results:
+        text = str(tweet['tweet_text'][0]).replace('[','').replace(']','')
+        tweet_string = '%s %s' % (tweet_string,text)
+        tweet_string = re.sub(r'http\S+', '', tweet_string)
+        tweet_string = re.sub(r'['+escaped_text+']', '',tweet_string)
+
+    tweet_text = re.sub(r'http\S+', '', tweet_text)
     tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
 
+    alchemy_text=tweet_text
+    if 'trump' in alchemy_text:
+        alchemy_text = 'donald trump'
     alchemy_response = {}
     if search_string != '*:*':
         try:
             alchemy_response = json.dumps(
             alchemy_language.combined(
-              text=tweet_text,
+              text=alchemy_text,
               extract='entities,keywords',
               sentiment=1,
               max_items=1),
@@ -176,15 +189,18 @@ def query():
     summary_data = ''
     if dbpedia_link != '':
         subject = dbpedia_link.replace('http://dbpedia.org/resource/','')
-        summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
-        response = urlopen(summary_link)
-        summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
-        summary_data = summary_data[list(summary_data.keys())[0]]['extract']
-        summary_data = (summary_data[:200] + '..') if len(summary_data) > 75 else summary_data
-        print(summary_data)
-
-    #print(date_info)
-
+        if selected_language and selected_language != 'en':
+            summary_link = 'https://%s.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % (selected_language,subject)
+            response = urlopen(summary_link)
+            summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+            summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
+        elif selected_language == 'en' or not summary_data or not selected_language:
+            summary_link = 'https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=%s' % subject
+            response = urlopen(summary_link)
+            summary_data = json.loads(response.read().decode('utf8'))['query']['pages']
+            summary_data = summary_data[list(summary_data.keys())[0]].get('extract')
+        if summary_data:
+            summary_data = (summary_data[:250] + '..') if len(summary_data) > 75 else summary_data
 
     # Return the results and render it on the html page
     return render_template('index.html',date_info=json.dumps(date_info),lang_info=filtered_lang_info,tweets=results,tags=tags,summary=summary_data,image_list=image_list)
@@ -202,7 +218,7 @@ def tags():
 # Retrieve Similar pages 
 @app.route('/morelikethis')
 def morelikethis():
-    solr = pysolr.Solr('http://35.165.140.166:8983/solr/prj4/', timeout=10)
+    solr = pysolr.Solr(HOST, timeout=10)
     
     tweet_id = request.args.get('similar')
 
@@ -218,22 +234,47 @@ def morelikethis():
 # Language detector
 @app.route('/getLang',methods=['GET'])
 def get_lang():
-    data = json.dumps(
-    alchemy_language.combined(
-      text=request.args.get('query'),
-      extract='entities,keywords',
-      sentiment=1,
-      max_items=1),
-    indent=2)
     
-    data_dict = ast.literal_eval(data)
-    return jsonify(data_dict)
+#     data = json.dumps(
+#     alchemy_language.combined(
+#       text=request.args.get('query'),
+#       extract='entities,keywords',
+#       sentiment=1,
+#       max_items=1),
+#     indent=2)
+    
+    query = request.args.get('query')
+    query = query.replace(' ','+').encode('utf-8')
+    url = urlopen('http://ws.detectlanguage.com/0.2/detect?q=%s&key=5936a491b5b768c58f9c5eda80873365' % (query))
+    url_reponse = json.loads(url.read().decode('utf8'))
+#     data_dict = ast.literal_eval(url_reponse)
+    data_dict = url_reponse
+    response_language = 'en'
+    print(data_dict)
+    if not (data_dict.get('data') and data_dict['data'].get('detections')):
+        response_language = 'en'
+    elif not data_dict['data']['detections'][0].get('language'):
+        response_language = 'en'
+    else:
+        language = data_dict['data']['detections'][0].get('language')
+        if language == 'ro':
+            response_language = 'es'
+        elif language == 'da':
+            response_language = 'ru'
+        elif language not in LANGUAGES:
+            response_language = 'en'
+        else:
+            response_language = language
+    lang_dict = {'language':response_language}
+        
+
+    return jsonify(lang_dict)
 
 
 # Maps 
 @app.route('/maps')
 def maps():
-    solr = pysolr.Solr('http://35.165.140.166:8983/solr/prj4/', timeout=10)
+    solr = pysolr.Solr(HOST, timeout=10)
     params = {'rows': '1000000'} 
     results = solr.search("tweet_lat:*",**params)
     locations = list()
