@@ -226,14 +226,17 @@ def morelikethis():
     
     tweet_id = request.args.get('similar')
 
-    params = {'mlt':'true','mlt.mintf':'7','mlt.fl':'_text_','mlt.mindf':'1','rows':100}   
+    params = {'mlt':'true','mlt.mintf':'7','mlt.fl':'_text_','mlt.mindf':'1','rows':10}   
 
     similar = solr.more_like_this('id:'+str(tweet_id), mltfl='_text_', **params)
     
+    results_count = len(similar)
     if len(similar)==0:
         similar = solr.search('id:'+tweet_id)
+        results_count = 1
+
     
-    return render_template('index.html',tweets=similar)
+    return render_template('index.html',tweets=similar,results_count=results_count)
 
 # Language detector
 @app.route('/getLang',methods=['GET'])
