@@ -37,6 +37,9 @@ def query():
     from_date = request.args.get('datefrom','')
     to_date = request.args.get('dateto','')
     
+    if not selected_language:
+        selected_language = 'en'
+    
     # Query Boosting
     boost_language = 'tweet_lang:%s^3' % selected_language
 
@@ -155,8 +158,8 @@ def query():
     tweet_text = re.sub(r'http\S+', '', tweet_text)
     tweet_text = re.sub(r'['+escaped_text+']', '',tweet_text)
 
-    alchemy_text=tweet_text
-    if 'trump' in alchemy_text:
+    alchemy_text=search_string
+    if  alchemy_text == 'trump':
         alchemy_text = 'donald trump'
     alchemy_response = {}
     if search_string != '*:*':
@@ -229,8 +232,6 @@ def morelikethis():
     
     if len(similar)==0:
         similar = solr.search('id:'+tweet_id)
-
-    print(similar.hits)
     
     return render_template('index.html',tweets=similar)
 
@@ -270,7 +271,6 @@ def get_lang():
             response_language = language
     lang_dict = {'language':response_language}
         
-
     return jsonify(lang_dict)
 
 
