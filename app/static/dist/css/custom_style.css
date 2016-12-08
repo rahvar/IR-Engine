@@ -35,3 +35,31 @@
 	/*top:15%;*/
 }
 
+#bootstrap-overrides #dateSlider {
+	position: relative;
+	width: 80%;
+	top:1.2em;
+	margin:0 auto;
+}
+
+.ui-rangeSlider-bar {
+	background: #337ab7;
+}
+
+#main-content {
+	padding-top: 2%;
+}
+
+/*#bootstrap-overrides .top-search-bar {
+	top:-4.2em;
+	z-index: 5;
+	width: 108%;
+}
+*/
+
+
+#bootstrap-overrides .navbar-static-top {
+	margin-bottom: 20px;
+	margin-top: 10px;
+	padding-bottom: 5px;
+}

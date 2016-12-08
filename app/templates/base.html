@@ -62,13 +62,17 @@
         }
 
         .navbar-static-top{
-            margin-top: 10px;
+            
+           /* z-index: 0;*/
         }
 
-/*        .top-search-bar {
-            margin-top: 1%;
+       .top-search-bar {
+            margin-top: 0;
+            position: absolute;
+            left: 18%;
+            width: 88%;
         }
-*
+
 
     </style>
 
@@ -81,11 +85,35 @@
     <div id="wrapper">
 
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation">
 
             <div class="navbar-header">
                 <i class="fa  fa-gears fa-3x"></i><a class="navbar-brand home-btn" href="/">Go Search</a> 
             </div>
+
+            <!-- <div class="row"> -->
+                <div class="col-lg-12 top-search-bar">
+                <form class="form-inline" action="/query" method="get" id="user-search">
+                    <div class="input-group custom-search-form col-lg-12">
+                        <select class="form-control lang-select" style="width:15%" 
+                                name="lang-select" title="Results will be given preference in this language">
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="pt">Português</option>
+                            <option value="fr">Français</option>
+                        </select>
+                        <input style="float:left;width:85%" type="text" class="form-control search-bar" 
+                                placeholder="Search..." name="usrquery">
+                        <span class="input-group-btn" style="vertical-align:top;">
+                            <button id="main-search-btn" class="btn btn-default" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                </div>
+                <!-- /.col-lg-12 -->
+            <!-- </div> -->
             <!-- /.navbar-header -->
 
             <!-- /.navbar-top-links -->      
@@ -107,7 +135,7 @@
                     </div>
                     {% endif %}
 
-                    <div id="dateSlider"></div>
+                    <div id="dateSlider" class="active"></div>
                     <div id="datefromserver" style="display: none;">{{date_info|safe}}</div>
 
                     <i class="fa fa-cubes fa-2x"></i><h4 class="lang_logo_text"> Analytics </h4>
@@ -118,6 +146,7 @@
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             <!-- /.navbar-static-side -->

@@ -1,51 +1,6 @@
 $(function(){    
 
-    // Setting date slider on page startup
-    setDateSlider();
-
-    // Resetting the language filters
-    function resetLangFilters() {
-        // Resetting the language filters
-        $('.lang-select').each(function(index, val) {
-            $(this).prop('checked',false);
-        });
-
-        var checkboxvalues = JSON.parse(sessionStorage.getItem('checkboxvalues')) || {};
-        for(var prop in checkboxvalues) {
-            checkboxvalues[prop] = false;
-        }
-        sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
-    }
-
-    // resetting date slider
-    function resetDateSlider() {
-        if(sessionStorage.getItem('dateSilderInfo') !== null)
-            sessionStorage.removeItem('dateSilderInfo');
-    }
-
-    // Resetting the date slider info
-    function setDateSlider() {
-
-        var dateInf = JSON.parse($('#datefromserver').text());
-
-        $("#dateSlider").dateRangeSlider({
-            bounds:{
-              min: new Date(dateInf[0].y,dateInf[0].m-1,dateInf[0].d),
-              max: new Date(dateInf[1].y,dateInf[1].m-1,dateInf[1].d)
-            }
-        });
-
-        if(sessionStorage.getItem('dateSilderInfo') !== null) {
-
-            var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
-        
-            console.log(dateSilderInfo)
-
-            $("#dateSlider").dateRangeSlider("values", 
-                new Date(dateSilderInfo['minDate']), 
-                new Date(dateSilderInfo['maxDate']));               
-        }            
-    }
+    //////////////////////////// RESETS //////////////////////////////////////
 
     // All page resets
     function pageResets() {
@@ -85,6 +40,136 @@ $(function(){
         sessionStorage.setItem('usrquery','');
     }
 
+    // Home location
+    if(window.location.pathname == '/' || window.location.pathname == '') {
+        sessionStorage.setItem('usrquery','');
+        $("input[name='usrquery']").val('');
+        pageResets();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    // Setting date slider on page startup
+    setDateSlider();
+
+    // resetting date slider
+    function resetDateSlider() {
+        if(sessionStorage.getItem('dateSilderInfo') !== null)
+            sessionStorage.removeItem('dateSilderInfo');
+    }
+
+    // Resetting the language filters
+    function resetLangFilters() {
+        // Resetting the language filters
+        $('.lang-select').each(function(index, val) {
+            $(this).prop('checked',false);
+        });
+
+        var checkboxvalues = JSON.parse(sessionStorage.getItem('checkboxvalues')) || {};
+        for(var prop in checkboxvalues) {
+            checkboxvalues[prop] = false;
+        }
+        sessionStorage.setItem('checkboxvalues',JSON.stringify(checkboxvalues));
+    }
+
+    // Resetting the date slider info
+    function setDateSlider() {
+
+        // Date Slider
+        var dateInf = JSON.parse($('#datefromserver').text());
+
+        var minDate = new Date(dateInf[0].y,dateInf[0].m-1,dateInf[0].d);
+        var maxDate = new Date(dateInf[1].y,dateInf[1].m-1,dateInf[1].d);
+
+        // set min and max date
+        $("#dateSlider").dateRangeSlider({
+            bounds:{
+              min: minDate,
+              max: maxDate
+            },
+            formatter:function(val){
+            var days = val.getDate(),
+                month = val.getMonth() + 1,
+                year = val.getFullYear();
+            return month + "-" + days + "-" + year%100;
+          }
+        });
+
+        // If there was a search previously
+        if(sessionStorage.getItem('dateSilderInfo') !== null) {
+
+            var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+        
+            console.log(dateSilderInfo)
+
+            $("#dateSlider").dateRangeSlider("values", 
+                new Date(dateSilderInfo['minDate']), 
+                new Date(dateSilderInfo['maxDate']));               
+        }
+        else {
+            // Set the date range slider 
+            $("#dateSlider").dateRangeSlider("values",minDate,maxDate);
+        }         
+    }
+
+    function dateFormat(minDate,maxDate) {
+
+        // format - 2016-12-05T00:00:00Z
+
+        var lMonth = parseInt(minDate.getMonth())+ 1;
+        var uMonth = parseInt(maxDate.getMonth())+ 1;
+        var lowerDate =  minDate.getFullYear() + '-' + lMonth+'-'+ minDate.getDate()+'T00:00:00Z';
+        var upperDate =  maxDate.getFullYear() + '-' + uMonth + '-'+maxDate.getDate()+'T00:00:00Z';
+
+        return {'minDate':lowerDate,'maxDate':upperDate};
+    }
+
+    // Date slider - triggered when the user changes the slider
+    $("#dateSlider").bind("userValuesChanged", function(event, data){
+        
+        var dateSilderInfo = {};
+
+        console.log("Something moved. min: " + data.values.min + " max: " + data.values.max);
+        var minDate = data.values.min;
+        var maxDate = data.values.max;
+
+        dateSilderInfo['minDate'] = data.values.min;
+        dateSilderInfo['maxDate'] = data.values.max;
+        dateSilderInfo['fulldate'] = data.values;
+        
+        if(sessionStorage.getItem('dateSilderInfo') !== null)
+            sessionStorage.removeItem('dateSilderInfo'); 
+
+        sessionStorage.setItem('dateSilderInfo',JSON.stringify(dateSilderInfo));
+
+        console.log("Inside userValuesChanged: " +  new Date(dateSilderInfo['minDate']) + dateSilderInfo['maxDate'])
+
+        var date = dateFormat(minDate,maxDate);
+
+        // Retrieve the query from the session
+        var query = sessionStorage.getItem('usrquery');
+    
+        var uri = '/query?usrquery='+ query;
+        uri += '&datefrom='+date['minDate']+'&dateto='+date['maxDate'];
+
+        // Check language
+        if(sessionStorage.getItem('checkboxvalues') !== null) {
+            var checkboxvalues = JSON.parse(sessionStorage.getItem('checkboxvalues'));
+            var lang = '';
+            $.each(checkboxvalues, function(key, val) {
+                if(key != '' && $('#'+key).prop('checked') == true)
+                    lang += key + ' ' 
+            });
+
+            if(lang != '')
+                uri += '&lang=' + lang;
+        }
+
+        window.location.assign(uri)
+    });
+
+    /////////////////////////////////// TAGS /////////////////////////////////////////
+
     // To populate tags from server
     $.ajax({
         url: "/tags",
@@ -115,6 +200,7 @@ $(function(){
         console.log("complete");
     });      
 
+    /////////////////////////////////// PAGINATION /////////////////////////////////////////
 
     // Pagination
     var perPage = $('.paginate');
@@ -138,6 +224,8 @@ $(function(){
             perPage.hide().slice(start, end).show();
         }
     });
+
+    /////////////////////////////////// LANGUAGE FACETING ///////////////////////////////////////
 
     // lang-select on page load
     var checkboxvalues = JSON.parse(sessionStorage.getItem('checkboxvalues')) || {};
@@ -180,77 +268,17 @@ $(function(){
             uri += '&lang=' + langs_selected;
         }
 
-        // if(sessionStorage.getItem('dateSilderInfo') != null) 
-        //     uri += 
+        if(sessionStorage.getItem('dateSilderInfo') !== null) {
 
-        //alert(uri)
+            var dateSliderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
+            uri += '&datefrom='+dateSliderInfo['minDate']+'&dateto='+ dateSliderInfo['maxDate'];
+        }
+
+        //alert(uri)     
         window.location.assign(uri) 
-    });
+    }); 
 
-    // reinstate the previous state from session
-    // if(sessionStorage.getItem('dateSilderInfo') != null) {  
-
-    //     var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
-
-    //     $("#dateSlider").dateRangeSlider({
-    //       bounds:{
-    //         min: dateSilderInfo['minDate'],
-    //         max: dateSilderInfo['maxDate']
-    //     }});
-    // }    
-
-    // Date slider 
-    $("#dateSlider").bind("userValuesChanged", function(event, data){
-        
-        var dateSilderInfo = {};
-
-        console.log("Something moved. min: " + data.values.min + " max: " + data.values.max);
-        var minDate = data.values.min;
-        var maxDate = data.values.max;
-
-        dateSilderInfo['minDate'] = data.values.min;
-        dateSilderInfo['maxDate'] = data.values.max;
-        dateSilderInfo['fulldate'] = data.values;
-
-        // Check if its same date in the session
-        // if (sessionStorage.getItem('dateSilderInfo') !== null) {
-        //     var dateSilderInfo = JSON.parse(sessionStorage.getItem('dateSilderInfo'));
-        //     var startDate = dateSilderInfo['minDate'];
-        //     var endDate = dateSilderInfo['maxDate'];
-
-        //     if(startDate == minDate && endDate == maxDate) {
-        //         event.preventDefault();
-        //     }
-        // }
-       
-        // Store the date in session
-
-        
-        if(sessionStorage.getItem('dateSilderInfo') !== null)
-            sessionStorage.removeItem('dateSilderInfo'); 
-
-        sessionStorage.setItem('dateSilderInfo',JSON.stringify(dateSilderInfo));
-
-        console.log("Inside userValuesChanged: " +  new Date(dateSilderInfo['minDate']) + dateSilderInfo['maxDate'])
-
-
-        // format - 2016-12-05T00:00:00Z
-        var lMonth = parseInt(minDate.getMonth())+ 1;
-        var uMonth = parseInt(maxDate.getMonth())+ 1;
-        var lowerDate =  minDate.getFullYear() + '-' + lMonth+'-'+ minDate.getDate()+'T00:00:00Z';
-        var upperDate =  maxDate.getFullYear() + '-' + uMonth + '-'+maxDate.getDate()+'T00:00:00Z';
-
-        console.log(lowerDate);
-        console.log(upperDate);
-        
-        // Retrieve the query from the session
-        var query = sessionStorage.getItem('usrquery');
-    
-        var uri = '/query?usrquery='+ query;
-        uri += '&datefrom='+lowerDate+'&dateto='+upperDate;
-
-        window.location.assign(uri)
-    });
+    /////////////////////////////////// DETECT LANGUAGE ///////////////////////////////////////
 
 
 	//Detect language from search bar
@@ -289,7 +317,7 @@ $(function(){
 		}
 	});
 
-
+    /////////////////////////////////// MAPS ///////////////////////////////////////
 
     // Maps
     var map;
@@ -321,10 +349,10 @@ $(function(){
     }
 
 
-    google.maps.event.addDomListener(window, 'load', initMap);
+    // google.maps.event.addDomListener(window, 'load', initMap);
 
-    $('#myModal').on('shown.bs.modal', function () {
-        google.maps.event.trigger(map, "resize");
-    });
+    // $('#myModal').on('shown.bs.modal', function () {
+    //     google.maps.event.trigger(map, "resize");
+    // });
 
 });
