@@ -15,9 +15,10 @@ import os
 import datetime
 from collections import Counter
 
-alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
-HOST = 'http://35.165.140.166:8983/solr/prj4/'
-# HOST = 'http://localhost:8983/solr/prj4/'
+# alchemy_language = AlchemyLanguageV1(api_key='b5abca00bba18cdda854cff13f3773df925a908b')
+alchemy_language = AlchemyLanguageV1(api_key='988c42d589d9872b7ea551bf687e908161d6f4d2')
+# HOST = 'http://35.165.140.166:8983/solr/prj4/'
+HOST = 'http://localhost:8983/solr/prj4/'
 LANGUAGES = ['en','es','pt','fr','ru']
 
 def lang_map(language):
@@ -253,6 +254,7 @@ def get_lang():
     query = request.args.get('query')
     query = query.replace(' ','+').encode('utf-8')
     url = urlopen('http://ws.detectlanguage.com/0.2/detect?q=%s&key=5936a491b5b768c58f9c5eda80873365' % (query))
+#     url = urlopen('http://ws.detectlanguage.com/0.2/detect?q=%s&key=f6f98bc9c61696a90ac98fd2479a13ae' % (query))
     url_reponse = json.loads(url.read().decode('utf8'))
 #     data_dict = ast.literal_eval(url_reponse)
     data_dict = url_reponse
