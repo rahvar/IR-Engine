@@ -1,6 +1,6 @@
 # IR-Engine
 Multilingual search system for Twitter data. <br /> <br />Final Project - Information Retrieval - Fall 2016 <br /><br />
-Project Members: Rahul Varma, Nikhil Prakash, Shawn Varghese
+Project Members: Rahul Varma, Nikhil Prakash, Shawn Varghese, Mythri Jonnavittula
 <br /> <br />`Front-End: HTML, CSS, jQuery` <br /> `Backend: Apache Solr, Flask(Python)`
 ## Features
 ### Multilingual Search
